@@ -1,11 +1,11 @@
 using UnityEngine;
 
 
-namespace _Project.Code.Features.Character.MB
+namespace _Project.Code.Features.Character.MB.MovementSystem
 {
     [RequireComponent(typeof(Rigidbody))]
     [DisallowMultipleComponent]
-    [AddComponentMenu("Assets/_Project/Code/Features/Character/MB")]
+    [AddComponentMenu("Assets/_Project/Code/Features/Character/MB/MovementSystem")]
     public class CharacterMovementSystem : MonoBehaviour, IMovementSystem
     {
         public Vector3 Direction => _direction;

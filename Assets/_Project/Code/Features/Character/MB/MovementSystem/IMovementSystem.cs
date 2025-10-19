@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace _Project.Code.Features.Character.MB
+namespace _Project.Code.Features.Character.MB.MovementSystem
 {
     public interface IMovementSystem : ICharacterSystem
     {
