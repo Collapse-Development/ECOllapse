@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace _Project.Code.Features.Character.MB
 {
+    [RequireComponent(typeof(Rigidbody))]
     [DisallowMultipleComponent]
     [AddComponentMenu("Assets/_Project/Code/Features/Character/MB")]
     public class CharacterMovementSystem : MonoBehaviour, IMovementSystem
@@ -21,6 +22,7 @@ namespace _Project.Code.Features.Character.MB
         [SerializeField, Min(0f)] private float _speed = 3.5f;
 
         private Vector3 _direction = Vector3.zero;
+        private Rigidbody _rb;
 
         public bool IsMoving { get; private set; }
         
@@ -36,14 +38,24 @@ namespace _Project.Code.Features.Character.MB
                 return;
             }
             
+            _rb = GetComponent<Rigidbody>();
+            _rb.isKinematic = true;
+            _rb.freezeRotation = true;
+            
             _character.TryRegisterSystem<IMovementSystem>(this);
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
             if (!IsMoving) return;
-            
-            transform.position += _direction * _speed * Time.deltaTime;
+
+            var dir = _direction;
+
+            if (dir.sqrMagnitude <= 1e-6f) return;
+            dir.Normalize();
+
+            var delta = dir * _speed * Time.fixedDeltaTime;
+            _rb.MovePosition(_rb.position + delta);
         }
 
         public void SetDirection(Vector3 direction)
