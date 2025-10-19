@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using _Project.Code.Features.Character.MB;
 
 namespace CharacterSystems
 {
