@@ -5,23 +5,35 @@ namespace CharacterSystems
 {
     public class CharacterHealthSystem : MonoBehaviour, IHealthSystem
     {
-        [SerializeField] private float maxHealth = 100f;
+        [SerializeField] private float _maxHealth = 100f;
         [SerializeField] private Character _character;
-        private float currentHealth;
+        private float _currentHealth;
 
         public float CurrentHealth
         {
-            get => currentHealth;
+            get => _currentHealth;
             private set
             {
-                currentHealth = maxHealth;
-                OnHealthChanged?.Invoke(currentHealth, maxHealth);
+                _currentHealth = Mathf.Clamp(value, 0, _maxHealth);
+                OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
+
+                if (_currentHealth == 0)
+                {
+                    OnDeath?.Invoke();
+                }
             }
         }
-        public float MaxHealth => maxHealth;
+
+        public float MaxHealth => _maxHealth;
 
         public event Action<float, float> OnHealthChanged;
         public event Action OnDeath;
+
+        private void Awake()
+        {
+            _character.TryRegisterSystem<IHealthSystem>(this);
+            CurrentHealth = _maxHealth;
+        }
 
         public void TakeDamage (float value)
         {
@@ -30,14 +42,7 @@ namespace CharacterSystems
                 return;
             }
 
-            currentHealth -= value;
-            currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
-            OnHealthChanged?.Invoke(currentHealth, maxHealth);
-
-            if (currentHealth == 0)
-            {
-                OnDeath?.Invoke();
-            }
+            CurrentHealth -= value;
         }
 
         public void AddHealth(float value)
@@ -47,14 +52,7 @@ namespace CharacterSystems
                 return;
             }
 
-            currentHealth += value;
-            currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
-            OnHealthChanged?.Invoke(currentHealth, maxHealth);
-        }
-
-        private void Awake()
-        {
-            _character.TryRegisterSystem<IHealthSystem>(this);
+            CurrentHealth += value;
         }
     }
 }
