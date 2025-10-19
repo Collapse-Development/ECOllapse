@@ -5,7 +5,6 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
 {
     [RequireComponent(typeof(Rigidbody))]
     [DisallowMultipleComponent]
-    [AddComponentMenu("Assets/_Project/Code/Features/Character/MB/MovementSystem")]
     public class CharacterMovementSystem : MonoBehaviour, IMovementSystem
     {
         public Vector3 Direction => _direction;
@@ -20,16 +19,16 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
         }
         
         [SerializeField, Min(0f)] private float _speed = 3.5f;
+        
+        public bool IsMoving { get; private set; }
 
+        private Character _character;
         private Vector3 _direction = Vector3.zero;
         private Rigidbody _rb;
-
-        public bool IsMoving { get; private set; }
         
-        private global::Character _character;
         private void Awake()
         {
-            _character = GetComponentInParent<global::Character>();
+            _character = GetComponentInParent<Character>();
 
             if (_character == null)
             {
@@ -54,7 +53,7 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
             if (dir.sqrMagnitude <= 1e-6f) return;
             dir.Normalize();
 
-            var delta = dir * _speed * Time.fixedDeltaTime;
+            var delta = dir * (_speed * Time.fixedDeltaTime);
             _rb.MovePosition(_rb.position + delta);
         }
 
