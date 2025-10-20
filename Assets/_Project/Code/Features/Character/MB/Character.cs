@@ -42,7 +42,7 @@ namespace _Project.Code.Features.Character.MB
                 return (T)system;
 
             Debug.LogError($"Система типа {type.Name} не найдена.");
-
+            Debug.LogError($"Система типа {type.Name} не найдена.");
             return null;
         }
     }
