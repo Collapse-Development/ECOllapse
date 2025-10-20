@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7569526002623985018}
   - component: {fileID: 2576201526646102553}
+  - component: {fileID: 4366627357180583011}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -45,3 +46,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Code.Features.Player.MB.Player
   _character: {fileID: 0}
+--- !u!114 &4366627357180583011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5694388514274116160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e5d5d8a0e1ac0c4ba65433432990a7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCharacterInput

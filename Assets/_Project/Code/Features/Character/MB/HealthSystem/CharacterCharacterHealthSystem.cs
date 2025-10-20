@@ -4,7 +4,7 @@ using _Project.Code.Features.Character.MB;
 
 namespace CharacterSystems
 {
-    public class CharacterHealthSystem : MonoBehaviour, IHealthSystem
+    public class CharacterCharacterHealthSystem : MonoBehaviour, ICharacterHealthSystem
     {
         [SerializeField] private float _maxHealth = 100f;
         [SerializeField] private Character _character;
@@ -32,7 +32,7 @@ namespace CharacterSystems
 
         private void Awake()
         {
-            _character.TryRegisterSystem<IHealthSystem>(this);
+            _character.TryRegisterSystem<ICharacterHealthSystem>(this);
             CurrentHealth = _maxHealth;
         }
 

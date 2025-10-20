@@ -8,7 +8,7 @@ namespace _Project.Code.Features.Character.MB
 {
     public class Character : MonoBehaviour
     {
-        private Dictionary<Type, ICharacterSystem> _systems;
+        private readonly Dictionary<Type, ICharacterSystem> _systems = new ();
 
         public bool TryRegisterSystem<T>(T system) where T : class, ICharacterSystem
         {

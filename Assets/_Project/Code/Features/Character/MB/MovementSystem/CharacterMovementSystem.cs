@@ -5,7 +5,7 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
 {
     [RequireComponent(typeof(Rigidbody))]
     [DisallowMultipleComponent]
-    public class CharacterMovementSystem : MonoBehaviour, IMovementSystem
+    public class CharacterMovementSystem : MonoBehaviour, ICharacterMovementSystem
     {
         public Vector3 Direction => _direction;
         public float Speed
@@ -41,7 +41,7 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
             _rb.isKinematic = true;
             _rb.freezeRotation = true;
             
-            _character.TryRegisterSystem<IMovementSystem>(this);
+            _character.TryRegisterSystem<ICharacterMovementSystem>(this);
         }
 
         private void FixedUpdate()

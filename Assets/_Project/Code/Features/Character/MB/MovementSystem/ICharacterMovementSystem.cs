@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace _Project.Code.Features.Character.MB.MovementSystem
 {
-    public interface IMovementSystem : ICharacterSystem
+    public interface ICharacterMovementSystem : ICharacterSystem
     {
       
         Vector3 Direction { get; }

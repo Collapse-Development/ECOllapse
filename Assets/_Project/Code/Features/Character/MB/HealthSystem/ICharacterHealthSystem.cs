@@ -3,7 +3,7 @@ using _Project.Code.Features.Character.MB;
 
 namespace CharacterSystems
 {
-    public interface IHealthSystem : ICharacterSystem
+    public interface ICharacterHealthSystem : ICharacterSystem
     {
         float CurrentHealth { get; }
         float MaxHealth { get; }
