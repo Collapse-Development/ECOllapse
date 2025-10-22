@@ -10,98 +10,98 @@ public class Generator : MonoBehaviour
     // Adjustable variables for Unity Inspector
     [Header("Generator Values")]
     [SerializeField]
-    int Width = 512;
+    protected int Width = 512;
 
     [SerializeField]
-    int Height = 512;
+    protected int Height = 512;
 
     [Header("Height Map")]
     [SerializeField]
-    int TerrainOctaves = 6;
+    protected int TerrainOctaves = 6;
 
     [SerializeField]
-    double TerrainFrequency = 1.25;
+    protected double TerrainFrequency = 1.25;
 
     [SerializeField]
-    float DeepWater = 0.2f;
+    protected float DeepWater = 0.2f;
 
     [SerializeField]
-    float ShallowWater = 0.4f;
+    protected float ShallowWater = 0.4f;
 
     [SerializeField]
-    float Sand = 0.5f;
+    protected float Sand = 0.5f;
 
     [SerializeField]
-    float Grass = 0.7f;
+    protected float Grass = 0.7f;
 
     [SerializeField]
-    float Forest = 0.8f;
+    protected float Forest = 0.8f;
 
     [SerializeField]
-    float Rock = 0.9f;
+    protected float Rock = 0.9f;
 
     [Header("Heat Map")]
     [SerializeField]
-    int HeatOctaves = 4;
+    protected int HeatOctaves = 4;
 
     [SerializeField]
-    double HeatFrequency = 3.0;
+    protected double HeatFrequency = 3.0;
 
     [SerializeField]
-    float ColdestValue = 0.05f;
+    protected float ColdestValue = 0.05f;
 
     [SerializeField]
-    float ColderValue = 0.18f;
+    protected float ColderValue = 0.18f;
 
     [SerializeField]
-    float ColdValue = 0.4f;
+    protected float ColdValue = 0.4f;
 
     [SerializeField]
-    float WarmValue = 0.6f;
+    protected float WarmValue = 0.6f;
 
     [SerializeField]
-    float WarmerValue = 0.8f;
+    protected float WarmerValue = 0.8f;
 
     [Header("Moisture Map")]
     [SerializeField]
-    int MoistureOctaves = 4;
+    protected int MoistureOctaves = 4;
 
     [SerializeField]
-    double MoistureFrequency = 3.0;
+    protected double MoistureFrequency = 3.0;
 
     [SerializeField]
-    float DryerValue = 0.27f;
+    protected float DryerValue = 0.27f;
 
     [SerializeField]
-    float DryValue = 0.4f;
+    protected float DryValue = 0.4f;
 
     [SerializeField]
-    float WetValue = 0.6f;
+    protected float WetValue = 0.6f;
 
     [SerializeField]
-    float WetterValue = 0.8f;
+    protected float WetterValue = 0.8f;
 
     [SerializeField]
-    float WettestValue = 0.9f;
+    protected float WettestValue = 0.9f;
 
     [Header("Rivers")]
     [SerializeField]
-    int RiverCount = 40;
+    protected int RiverCount = 40;
 
     [SerializeField]
-    float MinRiverHeight = 0.6f;
+    protected float MinRiverHeight = 0.6f;
 
     [SerializeField]
-    int MaxRiverAttempts = 1000;
+    protected int MaxRiverAttempts = 1000;
 
     [SerializeField]
-    int MinRiverTurns = 18;
+    protected int MinRiverTurns = 18;
 
     [SerializeField]
-    int MinRiverLength = 20;
+    protected int MinRiverLength = 20;
 
     [SerializeField]
-    int MaxRiverIntersections = 2;
+    protected int MaxRiverIntersections = 2;
 
     // private variables
     ImplicitFractal HeightMap;
@@ -124,6 +124,59 @@ public class Generator : MonoBehaviour
     MeshRenderer HeightMapRenderer;
     MeshRenderer HeatMapRenderer;
     MeshRenderer MoistureMapRenderer;
+    MeshRenderer BiomeMapRenderer;
+
+    protected BiomeType[,] BiomeTable =
+    {
+        {
+            BiomeType.Ice,
+            BiomeType.Tundra,
+            BiomeType.Grassland,
+            BiomeType.Desert,
+            BiomeType.Desert,
+            BiomeType.Desert,
+        },
+        {
+            BiomeType.Ice,
+            BiomeType.Tundra,
+            BiomeType.Grassland,
+            BiomeType.Desert,
+            BiomeType.Desert,
+            BiomeType.Desert,
+        },
+        {
+            BiomeType.Ice,
+            BiomeType.Tundra,
+            BiomeType.Woodland,
+            BiomeType.Woodland,
+            BiomeType.Savanna,
+            BiomeType.Savanna,
+        },
+        {
+            BiomeType.Ice,
+            BiomeType.Tundra,
+            BiomeType.BorealForest,
+            BiomeType.Woodland,
+            BiomeType.Savanna,
+            BiomeType.Savanna,
+        },
+        {
+            BiomeType.Ice,
+            BiomeType.Tundra,
+            BiomeType.BorealForest,
+            BiomeType.SeasonalForest,
+            BiomeType.TropicalRainforest,
+            BiomeType.TropicalRainforest,
+        },
+        {
+            BiomeType.Ice,
+            BiomeType.Tundra,
+            BiomeType.BorealForest,
+            BiomeType.TemperateRainforest,
+            BiomeType.TropicalRainforest,
+            BiomeType.TropicalRainforest,
+        },
+    };
 
     void Start()
     {
@@ -132,6 +185,7 @@ public class Generator : MonoBehaviour
         HeightMapRenderer = transform.Find("HeightTexture").GetComponent<MeshRenderer>();
         HeatMapRenderer = transform.Find("HeatTexture").GetComponent<MeshRenderer>();
         MoistureMapRenderer = transform.Find("MoistureTexture").GetComponent<MeshRenderer>();
+        BiomeMapRenderer = transform.Find("BiomeTexture").GetComponent<MeshRenderer>();
 
         Initialize();
         GetData();
@@ -147,6 +201,9 @@ public class Generator : MonoBehaviour
         UpdateBitmasks();
         FloodFill();
 
+        GenerateBiomeMap();
+        UpdateBiomeBitmask();
+
         HeightMapRenderer.materials[0].mainTexture = TextureGenerator.GetHeightMapTexture(
             Width,
             Height,
@@ -161,6 +218,14 @@ public class Generator : MonoBehaviour
             Width,
             Height,
             Tiles
+        );
+        BiomeMapRenderer.materials[0].mainTexture = TextureGenerator.GetBiomeMapTexture(
+            Width,
+            Height,
+            Tiles,
+            ColdestValue,
+            ColderValue,
+            ColdValue
         );
     }
 
@@ -200,6 +265,37 @@ public class Generator : MonoBehaviour
             MoistureFrequency,
             Seed
         );
+    }
+
+    private void UpdateBiomeBitmask()
+    {
+        for (var x = 0; x < Width; x++)
+        {
+            for (var y = 0; y < Height; y++)
+            {
+                Tiles[x, y].UpdateBiomeBitmask();
+            }
+        }
+    }
+
+    public BiomeType GetBiomeType(Tile tile)
+    {
+        return BiomeTable[(int)tile.MoistureType, (int)tile.HeatType];
+    }
+
+    private void GenerateBiomeMap()
+    {
+        for (var x = 0; x < Width; x++)
+        {
+            for (var y = 0; y < Height; y++)
+            {
+                if (!Tiles[x, y].Collidable)
+                    continue;
+
+                Tile t = Tiles[x, y];
+                t.BiomeType = GetBiomeType(t);
+            }
+        }
     }
 
     private void AddMoisture(Tile t, int radius)
@@ -400,7 +496,7 @@ public class Generator : MonoBehaviour
                 River river = new River(rivercount);
 
                 // Figure out the direction this river will try to flow
-                river.CurrentDirection = tile.GetLowestNeighbor();
+                river.CurrentDirection = tile.GetLowestNeighbor(this);
 
                 // Recursively find a path to water
                 FindPathToWater(tile, river.CurrentDirection, ref river);
@@ -1118,5 +1214,12 @@ public class Generator : MonoBehaviour
     private Tile GetRight(Tile t)
     {
         return Tiles[MathHelper.Mod(t.X + 1, Width), t.Y];
+    }
+
+    public float GetHeightValue(Tile tile)
+    {
+        if (tile == null)
+            return int.MaxValue;
+        return tile.HeightValue;
     }
 }
