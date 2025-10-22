@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Code.Features.Chunks
+namespace Code.Core.Chunks
 {
     /// <summary>
     /// Статический вспомогательный класс для работы с координатами и индексами чанков.
@@ -29,7 +29,8 @@ namespace Code.Features.Chunks
         public static int Wrap(int a, int m)
         {
             int r = a % m;
-            if (r < 0) r += m;
+            if (r < 0)
+                r += m;
             return r;
         }
 
@@ -42,9 +43,9 @@ namespace Code.Features.Chunks
         /// <returns>Структура ChunkIndex с индексами чанка (cx, cy).</returns>
         public static ChunkIndex WorldToChunkIndex(WorldPos wp, WorldConfig cfg)
         {
-            int cx = FloorToInt(wp.x / cfg.chunkWidth);
-            int cy = FloorToInt(wp.y / cfg.chunkHeight);
-            cx = Wrap(cx, cfg.chunksX);            // кольцевание по X
+            int cx = FloorToInt(wp.X / cfg.chunkWidth);
+            int cy = FloorToInt(wp.Y / cfg.chunkHeight);
+            cx = Wrap(cx, cfg.chunksX); // кольцевание по X
             cy = Mathf.Clamp(cy, 0, cfg.chunksY - 1); // clamp по Y
             return new ChunkIndex(cx, cy);
         }
@@ -59,16 +60,17 @@ namespace Code.Features.Chunks
         public static LocalPos WorldToLocal(WorldPos wp, WorldConfig cfg)
         {
             // Вычисляем "сырые" индексы чанков без кольцевания.
-            int cxRaw = FloorToInt(wp.x / cfg.chunkWidth);
-            int cyRaw = FloorToInt(wp.y / cfg.chunkHeight);
+            int cxRaw = FloorToInt(wp.X / cfg.chunkWidth);
+            int cyRaw = FloorToInt(wp.Y / cfg.chunkHeight);
 
             // Вычисляем смещение внутри чанка по X.
-            float lx = wp.x - cxRaw * cfg.chunkWidth;
+            float lx = wp.X - cxRaw * cfg.chunkWidth;
             lx = lx % cfg.chunkWidth;
-            if (lx < 0) lx += cfg.chunkWidth; // корректируем отрицательные значения
+            if (lx < 0)
+                lx += cfg.chunkWidth; // корректируем отрицательные значения
 
             // Смещение по Y.
-            float ly = wp.y - cyRaw * cfg.chunkHeight;
+            float ly = wp.Y - cyRaw * cfg.chunkHeight;
             ly = Mathf.Clamp(ly, 0f, cfg.chunkHeight);
 
             return new LocalPos(lx, ly);
@@ -83,7 +85,7 @@ namespace Code.Features.Chunks
         public static Vector2 ChunkOriginWorld(ChunkIndex ci, WorldConfig cfg)
         {
             // origin (bottom-left) world coordinate of chunk ci (with wrapped cx)
-            return new Vector2(ci.x * cfg.chunkWidth, ci.y * cfg.chunkHeight);
+            return new Vector2(ci.X * cfg.chunkWidth, ci.Y * cfg.chunkHeight);
         }
 
         /// <summary>
@@ -107,7 +109,7 @@ namespace Code.Features.Chunks
         /// <returns>Линейный индекс чанка (0..chunksX*chunksY-1).</returns>
         public static int ToLinear(ChunkIndex ci, WorldConfig cfg)
         {
-            return ci.y * cfg.chunksX + ci.x;
+            return (int)(ci.Y * cfg.chunksX + ci.X);
         }
     }
 }
