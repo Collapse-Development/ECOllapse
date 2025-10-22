@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 public enum HeightType
 {
@@ -55,13 +54,11 @@ public class Tile
     public MoistureType MoistureType;
     public BiomeType BiomeType;
 
-    public float Cloud1Value { get; set; }
-    public float Cloud2Value { get; set; }
     public float HeightValue { get; set; }
     public float HeatValue { get; set; }
     public float MoistureValue { get; set; }
-    public int X,
-        Y;
+    public int X;
+    public int Y;
     public int Bitmask;
     public int BiomeBitmask;
 
@@ -73,9 +70,7 @@ public class Tile
     public bool Collidable;
     public bool FloodFilled;
 
-    public Color Color = Color.black;
-
-    public List<River> Rivers = new List<River>();
+    public readonly List<River> Rivers = new();
 
     public int RiverSize { get; set; }
 
@@ -83,7 +78,7 @@ public class Tile
 
     public void UpdateBiomeBitmask()
     {
-        int count = 0;
+        var count = 0;
 
         if (Collidable && Top != null && Top.BiomeType == BiomeType)
             count += 1;
@@ -99,7 +94,7 @@ public class Tile
 
     public void UpdateBitmask()
     {
-        int count = 0;
+        var count = 0;
 
         if (Collidable && Top != null && Top.HeightType == HeightType)
             count += 1;
@@ -115,7 +110,7 @@ public class Tile
 
     public int GetRiverNeighborCount(River river)
     {
-        int count = 0;
+        var count = 0;
         if (Left != null && Left.Rivers.Count > 0 && Left.Rivers.Contains(river))
             count++;
         if (Right != null && Right.Rivers.Count > 0 && Right.Rivers.Contains(river))
@@ -129,21 +124,18 @@ public class Tile
 
     public Direction GetLowestNeighbor(Generator generator)
     {
-        float left = generator.GetHeightValue(Left);
-        float right = generator.GetHeightValue(Right);
-        float bottom = generator.GetHeightValue(Bottom);
-        float top = generator.GetHeightValue(Top);
+        var left = generator.GetHeightValue(Left);
+        var right = generator.GetHeightValue(Right);
+        var bottom = generator.GetHeightValue(Bottom);
+        var top = generator.GetHeightValue(Top);
 
         if (left < right && left < top && left < bottom)
             return Direction.Left;
-        else if (right < left && right < top && right < bottom)
+        if (right < left && right < top && right < bottom)
             return Direction.Right;
-        else if (top < left && top < right && top < bottom)
+        if (top < left && top < right && top < bottom)
             return Direction.Top;
-        else if (bottom < top && bottom < right && bottom < left)
-            return Direction.Bottom;
-        else
-            return Direction.Bottom;
+        return Direction.Bottom;
     }
 
     public void SetRiverPath(River river)

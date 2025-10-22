@@ -748,36 +748,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4146800d9604442bfc401f8eb6f2021, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Generator
-  Width: 256
-  Height: 256
-  TerrainOctaves: 6
-  TerrainFrequency: 1.25
-  DeepWater: 0.2
-  ShallowWater: 0.4
-  Sand: 0.5
-  Grass: 0.7
-  Forest: 0.8
-  Rock: 0.9
-  HeatOctaves: 4
-  HeatFrequency: 3
-  ColdestValue: 0.05
-  ColderValue: 0.18
-  ColdValue: 0.4
-  WarmValue: 0.6
-  WarmerValue: 0.8
-  MoistureOctaves: 4
-  MoistureFrequency: 3
-  DryerValue: 0.27
-  DryValue: 0.4
-  WetValue: 0.6
-  WetterValue: 0.8
-  WettestValue: 0.9
-  RiverCount: 40
-  MinRiverHeight: 0.6
-  MaxRiverAttempts: 1000
-  MinRiverTurns: 18
-  MinRiverLength: 20
-  MaxRiverIntersections: 2
+  width: 256
+  height: 256
+  terrainOctaves: 6
+  terrainFrequency: 1.25
+  deepWater: 0.2
+  shallowWater: 0.4
+  sand: 0.5
+  grass: 0.7
+  forest: 0.8
+  rock: 0.9
+  heatOctaves: 4
+  heatFrequency: 3
+  coldestValue: 0.05
+  colderValue: 0.18
+  coldValue: 0.4
+  warmValue: 0.6
+  warmerValue: 0.8
+  moistureOctaves: 4
+  moistureFrequency: 3
+  dryerValue: 0.27
+  dryValue: 0.4
+  wetValue: 0.6
+  wetterValue: 0.8
+  wettestValue: 0.9
+  riverCount: 40
+  minRiverHeight: 0.6
+  maxRiverAttempts: 1000
+  minRiverTurns: 18
+  minRiverLength: 20
+  maxRiverIntersections: 2
+  heightMapRenderer: {fileID: 1250762785}
+  heatMapRenderer: {fileID: 1971733523}
+  moistureMapRenderer: {fileID: 1129131024}
+  biomeMapRenderer: {fileID: 1427572665}
 --- !u!4 &1542960440
 Transform:
   m_ObjectHideFlags: 0
