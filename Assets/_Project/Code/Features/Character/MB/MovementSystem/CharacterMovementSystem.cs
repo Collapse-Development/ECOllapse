@@ -1,11 +1,10 @@
 using UnityEngine;
 
-
 namespace _Project.Code.Features.Character.MB.MovementSystem
 {
     [RequireComponent(typeof(Rigidbody))]
     [DisallowMultipleComponent]
-    public class CharacterMovementSystem : MonoBehaviour, ICharacterMovementSystem
+    public class CharacterMovementSystem : MonoBehaviour, ICharacterMovementSystem, ICharacterSystem
     {
         public Vector3 Direction => _direction;
         public float Speed
@@ -26,22 +25,34 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
         private Vector3 _direction = Vector3.zero;
         private Rigidbody _rb;
         
+        // ICharacterSystem implementation
+        public void Initialize(Character character)
+        {
+            _character = character;
+            Debug.Log("MovementSystem initialized with default values");
+        }
+        
+        public void Initialize(Character character, CharacterMovementSystemConfig cfg)
+        {
+            _character = character;
+            
+            // Инициализируем параметры из конфига
+            _speed = cfg.Speed;
+            
+            Debug.Log($"MovementSystem initialized with config: Speed={_speed}");
+        }
+        
         private void Awake()
         {
-            _character = GetComponentInParent<Character>();
-
-            if (_character == null)
-            {
-                Debug.LogError($"[{nameof(CharacterMovementSystem)}] Character reference is not set.");
-                enabled = false;
-                return;
-            }
-            
             _rb = GetComponent<Rigidbody>();
             _rb.isKinematic = true;
             _rb.freezeRotation = true;
             
-            _character.TryRegisterSystem<ICharacterMovementSystem>(this);
+            // Регистрация теперь будет через CharacterBuilder
+            if (_character != null)
+            {
+                _character.TryRegisterSystem<ICharacterMovementSystem>(this);
+            }
         }
 
         private void FixedUpdate()
