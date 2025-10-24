@@ -2,7 +2,7 @@ using UnityEditor;
 
 namespace _Project.Code.Features.Character.Configurations.Editor
 {
-    [CustomEditor(typeof(CharacterSystemConfig<>), true)]
+    [CustomEditor(typeof(CharacterSystemConfig), true)]
     public class CharacterSystemConfigEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()

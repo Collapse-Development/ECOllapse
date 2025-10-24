@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90154a4ac8de4f143ab12385c1307d62, type: 3}
-  m_Name: CharacterMovementSystemConfig
-  m_EditorClassIdentifier: Assembly-CSharp::CharacterMovementSystemConfig
-  Speed: 5
+  m_Script: {fileID: 11500000, guid: 1e5b5204b62b4df385728ec6fc43ffd9, type: 3}
+  m_Name: CharacterModel
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Code.Features.Character.Configurations.Systems.CharacterModelSystemConfig
+  PrefabPath: PlayerTestModel
