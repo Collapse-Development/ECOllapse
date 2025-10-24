@@ -4,7 +4,7 @@ using _Project.Code.Features.Character.MB;
 
 namespace CharacterSystems
 {
-    public class CharacterCharacterHealthSystem : MonoBehaviour, ICharacterHealthSystem
+    public class CharacterHealthSystem : MonoBehaviour, ICharacterHealthSystem
     {
         [SerializeField] private float _maxHealth = 100f;
         [SerializeField] private Character _character;

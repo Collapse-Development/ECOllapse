@@ -1,10 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public static class CharacterBuildConfigExtensions
 {
-    public static T GetConfig<T>(this CharacterBuildConfig cfg) where T : SystemConfig
+    public static T GetConfig<T>(this CharacterBuildConfig cfg) where T : CharacterSystemConfig
     {
         if (cfg == null)
         {
@@ -22,7 +22,7 @@ public static class CharacterBuildConfigExtensions
         return config;
     }
     
-    public static SystemConfig GetConfigBySystemType(this CharacterBuildConfig cfg, Type systemType)
+    public static CharacterSystemConfig GetConfigBySystemType(this CharacterBuildConfig cfg, Type systemType)
     {
         if (cfg == null)
         {
@@ -36,7 +36,7 @@ public static class CharacterBuildConfigExtensions
             return null;
         }
         
-        var config = cfg.Systems.FirstOrDefault(s => s.SystemType == systemType);
+        var config = cfg.Systems.FirstOrDefault(s => s.CharacterSystemType == systemType);
         
         if (config == null)
         {
