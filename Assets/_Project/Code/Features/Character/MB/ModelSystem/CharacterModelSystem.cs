@@ -10,16 +10,23 @@ namespace CharacterSystems
         [SerializeField] private Character _character;
         public CharacterModel Model { get; private set; }
 
-        private void Awake()
+        public bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
-            _character.TryRegisterSystem<ICharacterModelSystem>(this);
+            if (cfg is not CharacterModelSystemConfig modelCfg) return false;
+            
+            _character = character;
+            if (!_character.TryRegisterSystem<ICharacterModelSystem>(this)) return false;
+            
+            _prefabPath = modelCfg.PrefabPath;
+            
+            Debug.Log($"ModelSystem initialized with config: PrefabPath={_prefabPath}");
+            return true;
         }
-
         private void Start()
         {
             if (string.IsNullOrEmpty(_prefabPath))
             {
-                Debug.LogError("Путь к префабу не задан.");
+                Debug.LogError("РџСѓС‚СЊ Рє РїСЂРµС„Р°Р±Сѓ РЅРµ Р·Р°РґР°РЅ.");
                 return;
             }
 
@@ -27,7 +34,7 @@ namespace CharacterSystems
 
             if (_prefabPath == null)
             {
-                Debug.LogError("Префаб по заданному пути не найден.");
+                Debug.LogError("РџСЂРµС„Р°Р± РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РїСѓС‚Рё РЅРµ РЅР°Р№РґРµРЅ.");
                 return;
             }
 
@@ -35,7 +42,7 @@ namespace CharacterSystems
 
             if (Model == null)
             {
-                Debug.LogError("На указанном префабе отсутствует компонент CharacterModel.");
+                Debug.LogError("РќР° СѓРєР°Р·Р°РЅРЅРѕРј РїСЂРµС„Р°Р±Рµ РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚ РєРѕРјРїРѕРЅРµРЅС‚ CharacterModel.");
                 return;
             }
         }
