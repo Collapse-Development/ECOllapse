@@ -4,7 +4,6 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
 {
     public interface ICharacterMovementSystem : ICharacterSystem
     {
-      
         Vector3 Direction { get; }
         float Speed { get; set; }
         bool IsMoving { get; }
