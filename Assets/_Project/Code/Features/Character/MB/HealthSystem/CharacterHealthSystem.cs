@@ -29,10 +29,22 @@ namespace CharacterSystems
 
         public event Action<float, float> OnHealthChanged;
         public event Action OnDeath;
+        
+        public bool TryInitialize(Character character, CharacterSystemConfig cfg)
+        {
+            if (cfg is not CharacterHealthSystemConfig healthCfg) return false;
+            
+            _character = character;
+            if (!_character.TryRegisterSystem<ICharacterHealthSystem>(this)) return false;
+            
+            _maxHealth = healthCfg.MaxHealth;
+            
+            Debug.Log($"HealthSystem initialized with config: MaxHealth={_maxHealth}");
+            return true;
+        }
 
         private void Awake()
         {
-            _character.TryRegisterSystem<ICharacterHealthSystem>(this);
             CurrentHealth = _maxHealth;
         }
 
