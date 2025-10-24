@@ -4,7 +4,7 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
 {
     [RequireComponent(typeof(Rigidbody))]
     [DisallowMultipleComponent]
-    public class CharacterMovementSystem : MonoBehaviour, ICharacterMovementSystem, ICharacterSystem
+    public class CharacterMovementSystem : MonoBehaviour, ICharacterMovementSystem
     {
         public Vector3 Direction => _direction;
         public float Speed
@@ -25,21 +25,17 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
         private Vector3 _direction = Vector3.zero;
         private Rigidbody _rb;
         
-        // ICharacterSystem implementation
-        public void Initialize(Character character)
+        public bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
-            _character = character;
-            Debug.Log("MovementSystem initialized with default values");
-        }
-        
-        public void Initialize(Character character, CharacterMovementSystemConfig cfg)
-        {
-            _character = character;
+            if (cfg is not CharacterMovementSystemConfig movementCfg) return false;
             
-            // Инициализируем параметры из конфига
-            _speed = cfg.Speed;
+            _character = character;
+            if (!_character.TryRegisterSystem<ICharacterMovementSystem>(this)) return false;
+            
+            _speed = movementCfg.Speed;
             
             Debug.Log($"MovementSystem initialized with config: Speed={_speed}");
+            return true;
         }
         
         private void Awake()
@@ -47,12 +43,6 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
             _rb = GetComponent<Rigidbody>();
             _rb.isKinematic = true;
             _rb.freezeRotation = true;
-            
-            // Регистрация теперь будет через CharacterBuilder
-            if (_character != null)
-            {
-                _character.TryRegisterSystem<ICharacterMovementSystem>(this);
-            }
         }
 
         private void FixedUpdate()
