@@ -1,6 +1,5 @@
 using UnityEngine;
 
-
 namespace _Project.Code.Features.Character.MB.MovementSystem
 {
     [RequireComponent(typeof(Rigidbody))]
@@ -26,22 +25,24 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
         private Vector3 _direction = Vector3.zero;
         private Rigidbody _rb;
         
+        public bool TryInitialize(Character character, CharacterSystemConfig cfg)
+        {
+            if (cfg is not CharacterMovementSystemConfig movementCfg) return false;
+            
+            _character = character;
+            if (!_character.TryRegisterSystem<ICharacterMovementSystem>(this)) return false;
+            
+            _speed = movementCfg.Speed;
+            
+            Debug.Log($"MovementSystem initialized with config: Speed={_speed}");
+            return true;
+        }
+        
         private void Awake()
         {
-            _character = GetComponentInParent<Character>();
-
-            if (_character == null)
-            {
-                Debug.LogError($"[{nameof(CharacterMovementSystem)}] Character reference is not set.");
-                enabled = false;
-                return;
-            }
-            
             _rb = GetComponent<Rigidbody>();
             _rb.isKinematic = true;
             _rb.freezeRotation = true;
-            
-            _character.TryRegisterSystem<ICharacterMovementSystem>(this);
         }
 
         private void FixedUpdate()
