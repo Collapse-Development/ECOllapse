@@ -2,7 +2,7 @@ using _Project.Code.Features.Character.MB.MovementSystem;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New CharacterMovementSystemConfig", menuName = "Scriptable Objects/Character/Systems/Movement/CharacterMovementSystem")]
-public class CharacterModelSystemConfig : CharacterSystemConfig<CharacterMovementSystem>
+public class CharacterMovementSystemConfig : CharacterSystemConfig<CharacterMovementSystem>
 {
-    public string PrefabPath;
+    public float Speed = 5f;
 }

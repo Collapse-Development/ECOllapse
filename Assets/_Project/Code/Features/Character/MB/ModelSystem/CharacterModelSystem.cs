@@ -1,3 +1,4 @@
+using _Project.Code.Features.Character.Configurations.Systems;
 using UnityEngine;
 using _Project.Code.Features.Character.MB.Model;
 using _Project.Code.Features.Character.MB;
@@ -38,7 +39,7 @@ namespace CharacterSystems
                 return;
             }
 
-            Model = Instantiate(prefab).GetComponent<CharacterModel>();
+            Model = Instantiate(prefab, _character.transform).GetComponent<CharacterModel>();
 
             if (Model == null)
             {

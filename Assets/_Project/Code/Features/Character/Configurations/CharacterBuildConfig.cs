@@ -22,23 +22,5 @@ public class CharacterBuildConfig : ScriptableObject
             Systems.Remove(nullConfig);
             Debug.LogWarning($"Removed null config from {name}");
         }
-        
-        // Проверка на дубликаты SystemType
-        var interfaceGroups = Systems
-            .Where(s => s != null)
-            .SelectMany(s => s.CharacterSystemType
-                .GetInterfaces()
-                .Where(i => typeof(ICharacterSystem).IsAssignableFrom(i) && i != typeof(ICharacterSystem))
-                .Select(i => new { Config = s, Interface = i }))
-            .GroupBy(x => x.Interface)
-            .Where(g => g.Count() > 1)
-            .ToList();
-
-        foreach (var group in interfaceGroups)
-        {
-            Debug.LogWarning(
-                $"Duplicate configs implementing {group.Key.Name} found in {name}: " +
-                $"{string.Join(", ", group.Select(g => g.Config.CharacterSystemType))}");
-        }
     }
 }

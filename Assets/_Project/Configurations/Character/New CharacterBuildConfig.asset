@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: New CharacterBuildConfig
   m_EditorClassIdentifier: Assembly-CSharp::CharacterBuildConfig
   Systems:
+  - {fileID: 11400000, guid: e6c5ebd2e86f1f04ebcf5b397c4c7042, type: 2}
+  - {fileID: 11400000, guid: b7c53cac066ce634c9ecfe57ab61c134, type: 2}
   - {fileID: 11400000, guid: c8287a88b6ef3d64aa137bd23720b1db, type: 2}

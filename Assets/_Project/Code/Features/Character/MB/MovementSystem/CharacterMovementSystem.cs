@@ -27,10 +27,19 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
         
         public bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
-            if (cfg is not CharacterMovementSystemConfig movementCfg) return false;
+            var movementCfg = cfg as CharacterMovementSystemConfig;
+            if (movementCfg == null)
+            {
+                Debug.Log("Fuck1");
+                return false;
+            }
             
             _character = character;
-            if (!_character.TryRegisterSystem<ICharacterMovementSystem>(this)) return false;
+            if (!_character.TryRegisterSystem<ICharacterMovementSystem>(this))
+            {
+                Debug.Log("Fuck2");
+                return false;
+            }
             
             _speed = movementCfg.Speed;
             
