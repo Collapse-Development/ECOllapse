@@ -19,6 +19,6 @@ namespace _Project.Code.Features.Player.MB
             }
         }
 
-        public Action<Character.MB.Character, Character.MB.Character> OnCharacterUpdated;
+        public event Action<Character.MB.Character, Character.MB.Character> OnCharacterUpdated;
     }
 }
