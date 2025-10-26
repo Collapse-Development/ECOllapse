@@ -1,7 +1,8 @@
 using UnityEngine;
 using System;
+using Project.Code.Features.Character.MB;
 
-namespace Project.Code.Features.Character.MB
+namespace Project.Code.Features.Character.MB.HitProcessingSystem
 {
     [DisallowMultipleComponent]
     public class CharacterHitProcessingSystem : MonoBehaviour, IHitProcessingSystem
