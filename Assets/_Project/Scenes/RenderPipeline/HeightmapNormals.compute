@@ -1,0 +1,23 @@
+#pragma kernel Normals
+
+Texture2D<float4> _HeightmapTexture;
+RWTexture2D<float4> _NormalTexture;
+int2 _FullSize;
+float _Scale = 20.0;
+
+[numthreads(8,8,1)]
+void Normals(uint3 id : SV_DispatchThreadID) {
+    int2 px = int2(id.xy);
+    if (px.x >= _FullSize.x || px.y >= _FullSize.y) return;
+    int d = 2;
+    float s = 20.0;
+    float hL = _HeightmapTexture[int2(max(px.x - d, 0), px.y)].r;
+    float hR = _HeightmapTexture[int2(min(px.x + d, _FullSize.x - 1), px.y)].r;
+    float hD = _HeightmapTexture[int2(px.x, max(px.y - d, 0))].r;
+    float hU = _HeightmapTexture[int2(px.x, min(px.y + d, _FullSize.y - 1))].r;
+    float dx = (hR - hL) * s;
+    float dy = (hU - hD) * s;
+    float3 normal = 0.5 * normalize(float3(-dx, 1.0, -dy)) + 0.5;
+    float a = _HeightmapTexture[id.xy].r;
+    _NormalTexture[px] = float4(normal, a);
+}
