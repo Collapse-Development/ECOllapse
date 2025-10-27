@@ -13,5 +13,4 @@ MonoBehaviour:
   m_Name: TestCharacterConfig
   m_EditorClassIdentifier: Assembly-CSharp::CharacterConfig
   baseBuildConfig: {fileID: 11400000, guid: 15bd224fa5531a94bb3a4e5991aedaaf, type: 2}
-  mutations:
-  - {fileID: 11400000, guid: aefbd7e39a74dd34cb2872bf1a6f405e, type: 2}
+  mutations: []
