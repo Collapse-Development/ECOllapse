@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using _Project.Code.Features.Character.MB;
 
 [CreateAssetMenu(fileName = "New CharacterConfig", menuName = "Scriptable Objects/Character/CharacterConfig")]
 public class CharacterConfig : ScriptableObject
