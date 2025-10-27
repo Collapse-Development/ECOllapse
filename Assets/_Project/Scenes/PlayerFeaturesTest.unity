@@ -525,7 +525,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PLayerFeaturesTestSceneLoader
   _player: {fileID: 2834473092650414771}
-  _playerBuildConfig: {fileID: 11400000, guid: 15bd224fa5531a94bb3a4e5991aedaaf, type: 2}
+  _playerConfig: {fileID: 11400000, guid: 405fb20b693fdaf41bbe4855c094c8e7, type: 2}
 --- !u!4 &2057681914
 Transform:
   m_ObjectHideFlags: 0
