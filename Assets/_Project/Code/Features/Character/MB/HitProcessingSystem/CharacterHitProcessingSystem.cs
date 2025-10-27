@@ -1,31 +1,27 @@
 using UnityEngine;
 using System;
-using Project.Code.Features.Character.MB;
+using _Project.Code.Features.Character.Configurations.Systems;
+using _Project.Code.Features.Character.MB;
+using Project.Code.Features.Character.MB.HitProcessingSystem;
 
-namespace Project.Code.Features.Character.MB.HitProcessingSystem
+namespace CharacterSystems
 {
-    [DisallowMultipleComponent]
-    public class CharacterHitProcessingSystem : MonoBehaviour, IHitProcessingSystem
+    public class CharacterHitProcessingSystem : MonoBehaviour, ICharacterHitProcessingSystem
     {
-        [SerializeField] private Character _character;
+        private Character _character;
+        private ICharacterHealthSystem _healthSystem;
 
         public event Action OnHit;
-
-        private bool _isRegistered;
-
-        private void Awake()
+        
+        public bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
-            if (_character == null)
-            {
-                Debug.LogError("CharacterHitProcessingSystem: поле _character не назначено!", this);
-                return;
-            }
-
-            _isRegistered = _character.TryRegisterSystem<IHitProcessingSystem>(this);
-            if (!_isRegistered)
-            {
-                Debug.LogWarning("IHitProcessingSystem уже зарегистрирована для этого персонажа", this);
-            }
+            if (cfg is not CharacterHitProcessingSystemConfig systemCfg) return false;
+            
+            _character = character;
+            if (!_character.TryRegisterSystem<ICharacterHitProcessingSystem>(this)) return false;
+            
+            Debug.Log($"HitProcessing initialized");
+            return true;
         }
 
         public void ProcessHit(float damage)
@@ -36,17 +32,17 @@ namespace Project.Code.Features.Character.MB.HitProcessingSystem
                 return;
             }
 
-            OnHit?.Invoke();
-
-            var healthSystem = _character.GetSystem<IHealthSystem>();
+            var healthSystem = _character.GetSystem<ICharacterHealthSystem>();
             if (healthSystem != null)
             {
-                healthSystem.ApplyDamage(damage);
+                healthSystem.TakeDamage(damage);
             }
             else
             {
                 Debug.LogWarning("HealthSystem не найдена, урон не применён");
             }
+            
+            OnHit?.Invoke();
         }
     }
 }
