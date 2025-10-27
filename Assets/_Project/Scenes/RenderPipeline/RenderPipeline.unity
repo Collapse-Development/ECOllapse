@@ -472,7 +472,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aede3dfc8f121a6428b755f0e95f0581, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RendererStore
-  heightMap: {fileID: 2800000, guid: 243979542ac6f7f46b8d27de2f46e5e7, type: 3}
+  heightMap: {fileID: 2800000, guid: 55b80f979e0b9074ba3c087e2e9e2874, type: 3}
   texture: {fileID: 2800000, guid: bb8402b9f1b15864da3af57cfb1ea72a, type: 3}
   renderTarget: {fileID: 8400000, guid: 82c597e422db2284a9948fd7af399439, type: 2}
   mipMaxCompute: {fileID: 7200000, guid: 9b6e3db14e88fb541a199fffeb2109db, type: 3}

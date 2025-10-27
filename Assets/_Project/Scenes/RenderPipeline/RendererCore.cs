@@ -60,6 +60,9 @@ public class RendererCore : MonoBehaviour
         cameraRight = Vector3.Cross(Vector3.up, cameraForward).normalized;
         cameraUp = Vector3.Cross(cameraForward, cameraRight).normalized;
 
+        var w = RendererStore.Instance.renderTarget.width;
+        var h = RendererStore.Instance.renderTarget.height;
+
         var cs = RendererStore.Instance.heightMapDepthCompute;
         cs.SetTexture(0, "_HeightmapTexture", RendererStore.Instance.heightMap);
         cs.SetTexture(0, "_HeightmapMipTexture", mipMaxTexture);
@@ -67,20 +70,21 @@ public class RendererCore : MonoBehaviour
             "_TextureSize", 
             new Vector4(mipMaxTexture.width, mipMaxTexture.height, 0, 0)
         );
+        cs.SetVector("_ScreenSize", new Vector4(w, h, 0, 0));
         cs.SetVector("_CameraPos", cameraPos);
         cs.SetVector("_CameraForward", cameraForward);
         cs.SetVector("_CameraZoom", new Vector4(zoom, 0.0f));
         cs.SetVector("_CameraRight", cameraRight);
         cs.SetVector("_CameraUp", cameraUp);
         cs.SetTexture(0, "_RenderTarget", RendererStore.Instance.renderTarget);
-        var w = RendererStore.Instance.renderTarget.width;
-        var h = RendererStore.Instance.renderTarget.height;
+        
         cs.Dispatch(0, w / 8, h / 8, 1);
 
         var s = RendererStore.Instance.compositorMat;
+        s.SetVector("_CameraZoom", new Vector4(zoom, zoom, zoom, zoom));
         s.SetTexture("_Buffer", RendererStore.Instance.renderTarget);
         s.SetTexture("_Texture", RendererStore.Instance.texture);
-        s.SetVector("_ScreenSize", new Vector4(Screen.width, Screen.height, 0, 0));
+        s.SetVector("_ScreenSize", new Vector4(w, h, 0, 0));
         s.SetTexture("_Normals", normalTexture);
         s.SetVector("_CameraPos", cameraPos);
         s.SetVector("_CameraForward", cameraForward);

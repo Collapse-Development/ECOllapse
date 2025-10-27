@@ -46,7 +46,7 @@ Shader "Custom/Compositor"
                 float3 _CameraForward;
                 float3 _CameraUp;
                 float3 _CameraRight;
-                float _CameraZoom;
+                float4 _CameraZoom;
             CBUFFER_END
 
             Varyings vert(Attributes IN)
@@ -55,6 +55,18 @@ Shader "Custom/Compositor"
                 OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
                 OUT.uv = TRANSFORM_TEX(IN.uv, _BaseMap);
                 return OUT;
+            }
+
+
+            
+
+            float sphereSDF(float3 p, float3 center, float radius) {
+                return length(p - center) - radius;
+            }
+
+            float sampleScene(float3 p) {
+                return 
+                    sphereSDF(p, float3(128, sin(_Time.x * 20.0) * 40 + 70, 128), 40);
             }
 
 
@@ -71,6 +83,8 @@ Shader "Custom/Compositor"
                 float d0 = p.y - tex2D(_HeightmapTexture, p.xz).r;
                 return d0;
             }
+
+
             float shadowHm(float3 p, float3 dir) {
                 float it = 0;
                 float2 _TextureSize = float2(256, 256);
@@ -85,6 +99,10 @@ Shader "Custom/Compositor"
                     if (d > 0) {
                         return 0.0;
                     }
+                    float s = sampleScene(p);
+                    if (s < 0.3) {
+                        return 0.0;
+                    }
                     it += 1;
                     p += dir;
                 }
@@ -92,13 +110,7 @@ Shader "Custom/Compositor"
             }
 
 
-            float sphereSDF(float3 p, float3 center, float radius) {
-                return length(p - center) - radius;
-            }
-
-            float sampleScene(float3 p) {
-                return sphereSDF(p, float3(128, 20, 128), 30);
-            }
+            
 
             float3 norm(float3 p) {
                 float eps = 0.001;
@@ -114,31 +126,31 @@ Shader "Custom/Compositor"
                 for(int i=0; i < maxSteps; i++) {
                     float3 p = ro + rd * t;
                     float d = sampleScene(p);
-                    if(d < 1.0) return t;
+                    if(d < 0.3) return t;
                     t += d * stepScale;
-                    if(t > 300.0) break;
+                    if(t > 256.0) break;
                 }
                 return -1.0;
             }
 
             half4 frag(Varyings i) : SV_Target
             {
-            //     float2 s = _ScreenSize;
-            //     float z = _CameraZoom;
-            //     s = float2(1920, 1080);
-            //     z = 0.1;
+                float2 s = _ScreenSize;
+                float zo = _CameraZoom.x;
 
-            //     float2 px = s * i.uv;
-            //     float2 hId = px.xy - s * 0.5;
-            //     float3 start =
-            //         _CameraPos + 
-            //         _CameraRight * hId.x * z
-            //         + _CameraUp * hId.y * z;
+                if (zo < 0.00001) {
+                    return float4(1.0, 0.0, 0.0, 1.0);
+                }
 
-            //     float3 ray = _CameraForward;
-            //     float t = rayMarch(start, ray, 512, 1);
-            //     if(t < 0) return float4(0,0,0,1);
+                float2 px = s * i.uv;
+                float2 hId = px.xy - s * 0.5;
+                float3 start =
+                    _CameraPos + 
+                    _CameraRight * hId.x * zo
+                    + _CameraUp * hId.y * zo;
 
+                float3 ray = _CameraForward;
+                
             //     float3 pos = start + ray * t;
             //     float3 normal = norm(pos);
 
@@ -155,13 +167,25 @@ Shader "Custom/Compositor"
                 if (buffer.a == 0.0)
                     return float4(0,0,0,0);
 
-                float3 pos = buffer.xyz * 2.0;           // world-space intersection
-                float x = sin(_Time.x * 40.0);
-                float y = cos(_Time.x * 120.0) * 0.5 + 0.5 + 0.1;
-                float z = cos(_Time.x * 40.0);
+                float3 pos = buffer.xyz * 2.0;
+                float x = sin(_Time.x * 4.0);
+                float y = cos(_Time.x * 12.0) * 0.5 + 0.5 + 0.1;
+                float z = cos(_Time.x * 4.0);
                 float3 sun = normalize(float3(x, -y, z));
 
+                float scene_depth = rayMarch(start, ray, 512, 1.0);
+                float p =  buffer.a;
                 float3 normal = (tex2D(_Normals, b_uv).rgb - 0.5) * 2.0 * float3(1, 1, 1);
+                p = max(p, scene_depth);
+                // return float4(p, 0, 0, 1);
+                if ((scene_depth / 256.0) > 0) {
+                    float3 pos = start + ray * scene_depth;
+                    float3 normal = norm(pos);
+                    float diff = max(dot(normal, -sun), 0.1);
+                    return float4(diff, diff, diff, 1);
+                }
+
+
                 float shadow = shadowHm(pos * 256.0 + normal * 2, -sun);
 
                 float n = max(dot(normal, sun), 0.0);
@@ -170,7 +194,7 @@ Shader "Custom/Compositor"
                 float sdw = shadow * (1.0 - amb);
                 float3 res = tex2D(_Texture, b_uv).rgb;
                 // float3 res = float3(1, 1, 1);
-                float3 col = res * amb + res * sdw * float3(1.0, 1.0, 1.0); // white sun
+                float3 col = res * amb + res * sdw * float3(1.0, 1.0, 1.0);
                 return float4(col, 1.0);
             }
             ENDHLSL

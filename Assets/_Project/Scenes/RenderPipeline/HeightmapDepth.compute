@@ -19,7 +19,6 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         _RenderTarget[id.xy] = float4(0.0, 0.0, 0.0, 0.0);
         return;
     }
-    
     float z = _CameraZoom;
     int2 hId = id.xy - _ScreenSize * 0.5;
     float3 start =
