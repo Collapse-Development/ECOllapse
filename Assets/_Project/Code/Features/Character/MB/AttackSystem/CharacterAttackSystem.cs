@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using _Project.Code.Features.Character.MB;
 using _Project.Code.Features.Character.Configurations.Systems;
+using Project.Code.Features.Character.MB.HitProcessingSystem;
 
 namespace _Project.Code.Features.Character.MB.AttackSystem
 {
@@ -21,7 +22,6 @@ namespace _Project.Code.Features.Character.MB.AttackSystem
         private bool isAttacking = false;
         private Coroutine currentAttackCoroutine;
         
-        // ТВОЙ метод из архитектуры
         public bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
             var attackCfg = cfg as CharacterAttackSystemConfig;
@@ -44,14 +44,6 @@ namespace _Project.Code.Features.Character.MB.AttackSystem
             
             Debug.Log($"AttackSystem initialized with config");
             return true;
-        }
-        
-        // НОВЫЙ метод для совместимости
-        public void Initialize(Character character)
-        {
-            _character = character;
-            _character.TryRegisterSystem<IAttackSystem>(this);
-            Debug.Log("AttackSystem initialized");
         }
         
         public void Attack()
@@ -82,7 +74,7 @@ namespace _Project.Code.Features.Character.MB.AttackSystem
             {
                 if (collider.gameObject == gameObject) continue;
                 
-                IHitProcessingSystem hitSystem = collider.GetComponent<IHitProcessingSystem>();
+                var hitSystem = collider.GetComponentInParent<ICharacterHitProcessingSystem>();
                 if (hitSystem != null)
                 {
                     hitSystem.ProcessHit(attackDamage);
