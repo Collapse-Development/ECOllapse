@@ -9,7 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e5b5204b62b4df385728ec6fc43ffd9, type: 3}
-  m_Name: CharacterModel
-  m_EditorClassIdentifier: Assembly-CSharp::_Project.Code.Features.Character.Configurations.Systems.CharacterModelSystemConfig
-  PrefabPath: PlayerTestModel
+  m_Script: {fileID: 11500000, guid: 3da3c13595d447a9acc1a6f0d4405591, type: 3}
+  m_Name: New CharacterHitProcessingSystemConfig
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterHitProcessingSystemConfig
