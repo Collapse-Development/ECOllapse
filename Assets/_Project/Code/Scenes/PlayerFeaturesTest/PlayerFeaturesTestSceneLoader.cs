@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class PlayerFeaturesTestSceneLoader : MonoBehaviour
 {
     [SerializeField] private Player _player;
-    [SerializeField] private CharacterBuildConfig _playerBuildConfig;
+    [SerializeField] private CharacterConfig _playerConfig;
     
     private IEnumerator Start()
     {
@@ -15,7 +15,7 @@ public class PlayerFeaturesTestSceneLoader : MonoBehaviour
         while (asyncLoadGameUI is { isDone: false })
             yield return null;
         
-        var playerCharacter = CharacterBuilder.Build(_playerBuildConfig);
+        var playerCharacter = CharacterBuilder.Build(_playerConfig.GetBuildConfig());
         _player.Character = playerCharacter;
 
         var gameSceneContext = new GameSceneContext

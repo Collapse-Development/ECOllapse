@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a328a83d8326f9740afef2c32e919e5b, type: 3}
-  m_Name: New CharacterBuildConfig
+  m_Name: Test
   m_EditorClassIdentifier: Assembly-CSharp::CharacterBuildConfig
   Systems:
   - {fileID: 11400000, guid: e6c5ebd2e86f1f04ebcf5b397c4c7042, type: 2}
-  - {fileID: 11400000, guid: b7c53cac066ce634c9ecfe57ab61c134, type: 2}
+  - {fileID: 11400000, guid: 61e6df59bef9d9c4e8b576993f4de537, type: 2}
   - {fileID: 11400000, guid: c8287a88b6ef3d64aa137bd23720b1db, type: 2}

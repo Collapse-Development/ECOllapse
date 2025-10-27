@@ -525,7 +525,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PLayerFeaturesTestSceneLoader
   _player: {fileID: 2834473092650414771}
-  _playerBuildConfig: {fileID: 11400000, guid: 15bd224fa5531a94bb3a4e5991aedaaf, type: 2}
+  _playerConfig: {fileID: 11400000, guid: 405fb20b693fdaf41bbe4855c094c8e7, type: 2}
 --- !u!4 &2057681914
 Transform:
   m_ObjectHideFlags: 0
@@ -556,6 +556,10 @@ PrefabInstance:
     - target: {fileID: 5694388514274116160, guid: e4918f1d0ccd5494293dab776ae92067, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 5694388514274116160, guid: e4918f1d0ccd5494293dab776ae92067, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7569526002623985018, guid: e4918f1d0ccd5494293dab776ae92067, type: 3}
       propertyPath: m_LocalPosition.x
