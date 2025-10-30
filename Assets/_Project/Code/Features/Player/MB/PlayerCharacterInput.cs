@@ -1,4 +1,5 @@
 using System;
+using _Project.Code.Features.Character.MB;
 using _Project.Code.Features.Character.MB.MovementSystem;
 using _Project.Code.Features.Player.MB;
 using UnityEngine;
@@ -16,13 +17,20 @@ public class PlayerCharacterInput : MonoBehaviour
     private void Awake()
     {
         _player = GetComponent<Player>();
+        _player.OnCharacterUpdated += OnCharacterUpdated;
 
         SetUpActions();
     }
 
+    private void OnCharacterUpdated(Character old, Character current)
+    {
+        _movementSystem = current?.GetSystem<ICharacterMovementSystem>();
+        Debug.Log("Movement: " + _movementSystem);
+    }
+
     private void Start()
     {
-        _movementSystem = _player.Character.GetSystem<ICharacterMovementSystem>();
+        _movementSystem = _player.Character?.GetSystem<ICharacterMovementSystem>();
     }
 
     private void SetUpActions()
