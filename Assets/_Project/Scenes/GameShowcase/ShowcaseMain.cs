@@ -31,6 +31,7 @@ public class ShowcaseMain : MonoBehaviour
     {
         SetupScene();
         SetupInput();
+        ShowcaseStore.S.Init();
     }
 
 

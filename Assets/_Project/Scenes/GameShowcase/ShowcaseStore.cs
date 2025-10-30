@@ -74,7 +74,7 @@ public class ShowcaseStore : MonoBehaviour
         envBuffer.SetData(new PlayfieldEnv[]{ env });
     }
 
-    void Start()
+    public void Init()
     {
         int sizeX = tileSizeX * chunkDim + tileDepth * chunkDim;
         int sizeY = tileSizeY * chunkDim + tileDepth * chunkDim;
