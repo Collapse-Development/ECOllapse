@@ -4,7 +4,7 @@ namespace _Project.Code.Features.Character.MB.EffectsSystem
 {
     public abstract class CharacterBaseEffect : ICharacterEffect
     {
-        public event Action<ICharacterEffect> OnEffectEnded;
+        public event Action<ICharacterEffect> OnEffectCanceled;
 
         protected Character Character;
         protected ICharacterEffectCancellationRule CancellationRule;
@@ -21,7 +21,7 @@ namespace _Project.Code.Features.Character.MB.EffectsSystem
 
         public virtual void Cancel()
         {
-            OnEffectEnded?.Invoke(this);
+            OnEffectCanceled?.Invoke(this);
         }
     }
 }

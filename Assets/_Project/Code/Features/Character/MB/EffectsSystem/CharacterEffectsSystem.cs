@@ -58,7 +58,7 @@ namespace _Project.Code.Features.Character.MB.EffectsSystem
         {
             effect.Initialize(_character);
             _effects.Add(effect);
-            effect.OnEffectEnded += RemoveEffect;
+            effect.OnEffectCanceled += RemoveEffect;
             OnEffectAdded?.Invoke(effect);
         }
 
