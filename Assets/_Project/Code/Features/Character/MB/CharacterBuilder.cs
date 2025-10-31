@@ -36,16 +36,18 @@ public static class CharacterBuilder
         var systemType = config.CharacterSystemType;
         
         // Создаем систему на GameObject
-        var systemComponent = character.gameObject.AddComponent(systemType) as ICharacterSystem;
-        
-        if (systemComponent == null)
+        var systemComponent = character.gameObject.AddComponent(systemType);
+        var system = systemComponent as ICharacterSystem;
+
+        if (systemComponent == null || system == null)
         {
             Debug.LogError($"Failed to create system of type {systemType}");
             return;
         }
 
-        if (!systemComponent.TryInitialize(character, config))
+        if (!system.TryInitialize(character, config))
         {
+            Object.Destroy(systemComponent);
             Debug.LogError($"Character System({config.CharacterSystemType}) Initialization Failed");
         }
     }

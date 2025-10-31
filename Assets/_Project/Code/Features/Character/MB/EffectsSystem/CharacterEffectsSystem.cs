@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
 using _Project.Code.Features.Character.Configurations.Systems;
-using JetBrains.Annotations;
 using UnityEngine;
 
 namespace _Project.Code.Features.Character.MB.EffectsSystem
 {
     public class CharacterEffectsSystem : MonoBehaviour, ICharacterEffectsSystem
     {
-        private Dictionary<Type, ICharacterEffect> _effects;
+        public event Action<ICharacterEffect> OnEffectAdded;
+
+        private List<ICharacterEffect> _effects;
         private Character _character;
         
         public bool TryInitialize(Character character, CharacterSystemConfig cfg)
@@ -18,11 +19,7 @@ namespace _Project.Code.Features.Character.MB.EffectsSystem
             _character = character;
             if (!_character.TryRegisterSystem<ICharacterEffectsSystem>(this)) return false;
             
-            _effects = new Dictionary<Type, ICharacterEffect>();
-            foreach (var effect in systemCfg.Effects)
-            {
-                AddEffect(CharacterEffectsHelper.CreateEffect(effect));
-            }
+            _effects = new List<ICharacterEffect>();
             
             Debug.Log($"EffectsSystem initialized");
             return true;
@@ -34,7 +31,7 @@ namespace _Project.Code.Features.Character.MB.EffectsSystem
             
             float dt = Time.deltaTime;
             
-            foreach (var effect in _effects.Values)
+            foreach (var effect in _effects)
             {
                 if (effect != null)
                 {
@@ -43,19 +40,31 @@ namespace _Project.Code.Features.Character.MB.EffectsSystem
             }
         }
         
-        [CanBeNull]
-        public T GetEffect<T>() where T : class, ICharacterEffect
+        public List<T> GetEffectsOfType<T>() where T : class, ICharacterEffect
         {
-            if (_effects.TryGetValue(typeof(T), out var effect))
+            var typeEffects = new List<T>();
+            foreach (var effect in _effects)
             {
-                return effect as T;
+                if (effect is T characterEffect)
+                {
+                    typeEffects.Add(characterEffect);
+                }
             }
-            return null;
+            
+            return typeEffects;
         }
-        
-        private void AddEffect<T>(T effect) where T : class, ICharacterEffect
+
+        public void AddEffect(ICharacterEffect effect)
         {
-            _effects[typeof(T)] = effect;
+            effect.Initialize(_character);
+            _effects.Add(effect);
+            effect.OnEffectCanceled += RemoveEffect;
+            OnEffectAdded?.Invoke(effect);
+        }
+
+        private void RemoveEffect(ICharacterEffect effect)
+        { 
+            _effects.Remove(effect);
         }
     }
 }

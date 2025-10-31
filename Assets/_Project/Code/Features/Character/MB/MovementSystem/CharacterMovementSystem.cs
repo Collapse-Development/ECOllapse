@@ -23,6 +23,8 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
 
         private Character _character;
         private Vector3 _direction = Vector3.zero;
+        private float _baseSpeed;
+        private float _frameSpeedMultiplier = 1;
         private Rigidbody _rb;
         
         public bool TryInitialize(Character character, CharacterSystemConfig cfg)
@@ -41,7 +43,7 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
                 return false;
             }
             
-            _speed = movementCfg.Speed;
+            _baseSpeed = movementCfg.Speed;
             
             Debug.Log($"MovementSystem initialized with config: Speed={_speed}");
             return true;
@@ -52,6 +54,13 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
             _rb = GetComponent<Rigidbody>();
             _rb.isKinematic = true;
             _rb.freezeRotation = true;
+        }
+
+        private void Update()
+        {
+            Speed = _baseSpeed * _frameSpeedMultiplier;
+            
+            _frameSpeedMultiplier = 1;
         }
 
         private void FixedUpdate()
@@ -71,6 +80,11 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
         {
             _direction = direction.sqrMagnitude > 1e-6f ? direction.normalized : Vector3.zero;
             UpdateIsMovingFlag();
+        }
+
+        public void ApplyFrameSpeedMultiplier(float multiplier)
+        {
+            _frameSpeedMultiplier *= multiplier;
         }
 
         private void UpdateIsMovingFlag()
