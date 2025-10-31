@@ -7,6 +7,5 @@ namespace _Project.Code.Features.Character.Configurations.Systems
     [CreateAssetMenu(fileName = "New CharacterEffectsSystemConfig", menuName = "Scriptable Objects/Character/Systems/Effects/DefaultEffectsSystem")]
     public class CharacterEffectsSystemConfig : CharacterSystemConfig<CharacterEffectsSystem>
     {
-        public List<CharacterEffects> Effects;
     }
 }
