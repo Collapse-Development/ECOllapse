@@ -1,0 +1,119 @@
+#pragma kernel CSMain
+
+uint2 _ScreenSize;
+
+float3 _CameraPos;
+float3 _CameraForward;
+float3 _CameraUp;
+float3 _CameraRight;
+float _CameraZoom;
+
+Texture2D<float4> _HeightmapTexture;
+Texture2D<float4> _HeightmapMipTexture;
+uint2 _TextureSize;
+
+RWTexture2D<float4> _RenderTarget;
+
+void DrawCol(int x, float4 c){
+    for (int i = 0; i < _ScreenSize.y; i++) {
+        _RenderTarget[int2(x, i)] = c;
+    }
+}
+[numthreads(16,1,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    for (int i = 0; i < _ScreenSize.y; i++) { // TODO! DEV ONLY CLEAR
+        _RenderTarget[int2(id.x, i)] = float4(0.0, 0.0, 0.0, 0.0);
+    }
+    // camera pos must be in px cords.
+    if (id.x >= _ScreenSize.x) {
+        for (int i = 0; i < _ScreenSize.y; i++) {
+            _RenderTarget[int2(id.x, i)] = float4(0.0, 0.0, 0.0, 0.0);
+        }
+        return;
+    }
+    float z = _CameraZoom * 20.0;
+
+    int idx = int(id.x) - int(_ScreenSize.x / 2); // center
+    float3 start =
+        _CameraPos + 
+        _CameraRight * idx * z
+        - _CameraUp * _ScreenSize.y * 0.5 * z; //Start from bottom ray
+    float3 ray = _CameraForward;
+    float3 pos = start;
+    int remain = _ScreenSize.y; 
+    float dt_step = 1; // 1px
+    float dt = 0;
+    float dist = 0;
+
+    int it = 0;
+
+    // Find 2d intersection with square
+    float2 minB = float2(0, 0);
+    float2 maxB = float2(_TextureSize.x, _TextureSize.y);
+
+    float2 o = float2(start.x, start.z);
+    bool inside = all(o >= minB && o <= maxB);
+    if (!inside) {
+        float2 d = float2(ray.x, ray.z);
+
+        float2 invD = 1.0 / d;
+
+        float2 t0s = (minB - o) * invD;
+        float2 t1s = (maxB - o) * invD;
+
+        float2 tminV = min(t0s, t1s);
+        float2 tmaxV = max(t0s, t1s);
+
+        float t_entry = max(tminV.x, tminV.y);
+        float t_exit  = min(tmaxV.x, tmaxV.y);
+
+        bool hit = t_entry <= t_exit;
+
+        float2 hitPos = o + d * t_entry;
+        if (!hit) {
+            for (int i = 0; i < _ScreenSize.y; i++) {
+                _RenderTarget[int2(id.x, i)] = float4(0.0, 0.0, 0.0, 0.0);
+            }
+            return;
+        }
+        hitPos = hitPos - float2(0.0001, 0.0001); // hack
+        // dist = length(start.xz - hitPos.xy);
+        // start.xz = hitPos.xy;
+    }
+
+    [loop]
+    while (
+        it < 512
+        // pos.x >= 0 && pos.x <= _TextureSize.x 
+        // && pos.y >= 0 && pos.y <= _TextureSize.x // lets assume the playfield is cube 
+        // && pos.z >= 0 && pos.z <= _TextureSize.y
+    ) {
+        int2 uv = int2(clamp(pos.x, 0, _TextureSize.x-1),
+               clamp(pos.z, 0, _TextureSize.y-1));
+        float h = _HeightmapTexture[uv].a * 255.0;
+        float d = h - pos.y;
+        if (d > 0) {
+            uint skip = ceil(d / dt_step);
+            [loop]
+            for (int i = 0; i < skip; i++) {
+                if (remain - i < 0) {
+                    return;
+                }
+                _RenderTarget[int2(id.x, remain - i)] = float4(0.0, 0.0, 0.0, dist / 255.0);
+            }
+            remain -= skip;
+            dt += skip;
+        }
+        dist += 1;
+        it += 1;
+        pos = start + ray * dist + _CameraUp * dt * z;
+    }
+    for (int i = remain; i > 0; i--) {
+        _RenderTarget[int2(id.x, i)] = float4(1.0, 0.0, 0.0, 0.0);
+    }
+}
+
+// No need iterate trough all heightmap for each pixel - its 1d now!
+// Each thread solve column of pixels! Like our grandparents do!
+// Probably this approach is very cheap!

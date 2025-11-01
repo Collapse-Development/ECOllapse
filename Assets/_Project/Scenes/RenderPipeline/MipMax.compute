@@ -1,0 +1,63 @@
+#pragma kernel MipLevel0
+#pragma kernel MipLevel1
+#pragma kernel MipLevel2
+#pragma kernel MipLevel3
+
+Texture2D<float4> _HeightmapTexture;
+int2 _FullSize;
+RWTexture2D<float4> _MipMapTexture;
+float4 _FirstMul;
+
+
+[numthreads(8,8,1)]
+void MipLevel0(uint3 id : SV_DispatchThreadID) {
+    int2 px = int2(id.xy);
+    if (px.x >= _FullSize.x || px.y >= _FullSize.y) return;
+    _MipMapTexture[px] = float4(_HeightmapTexture.Load(int3(px,0)).r, 0.0, 0.0, 0.0) * _FirstMul.r;
+}
+
+[numthreads(8,8,1)]
+void MipLevel1(uint3 id : SV_DispatchThreadID) {
+    int2 px = int2(id.xy);
+    if (px.x >= _FullSize.x || px.y >= _FullSize.y) return;
+    float4 col = _MipMapTexture[px];
+    _MipMapTexture[px] = float4(
+        col.r,
+        max(
+            max(_MipMapTexture[px             ].r, _MipMapTexture[px + int2(0, 1)].r),
+            max(_MipMapTexture[px + int2(1, 0)].r, _MipMapTexture[px + int2(1, 1)].r)
+        ),
+        0.0,
+        0.0
+    );
+}
+
+[numthreads(8,8,1)]
+void MipLevel2(uint3 id : SV_DispatchThreadID) {
+    int2 px = int2(id.xy);
+    if (px.x >= _FullSize.x || px.y >= _FullSize.y) return;
+    float4 col = _MipMapTexture[px];
+    _MipMapTexture[px] = float4(
+        col.r,
+        col.g,
+        max(
+            max(_MipMapTexture[px             ].g, _MipMapTexture[px + int2(0, 2)].g),
+            max(_MipMapTexture[px + int2(2, 0)].g, _MipMapTexture[px + int2(2, 2)].g)
+        ),
+        0.0
+    );
+}
+
+[numthreads(8,8,1)]
+void MipLevel3(uint3 id : SV_DispatchThreadID) {
+    int2 px = int2(id.xy);
+    if (px.x >= _FullSize.x || px.y >= _FullSize.y) return;
+    float4 col = _MipMapTexture[px];
+    _MipMapTexture[px] = float4(
+        col.rgb,
+        max(
+            max(_MipMapTexture[px             ].b, _MipMapTexture[px + int2(0, 4)].b),
+            max(_MipMapTexture[px + int2(4, 0)].b, _MipMapTexture[px + int2(4, 4)].b)
+        )
+    );
+}
