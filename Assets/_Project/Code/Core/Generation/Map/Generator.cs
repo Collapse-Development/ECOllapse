@@ -2,6 +2,7 @@
 using System.Linq;
 using _Project.Code.Core.Map;
 using AccidentalNoise;
+using Code.Core.Chunks;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -19,6 +20,10 @@ public class Generator : MonoBehaviour
     [FormerlySerializedAs("Height")]
     [SerializeField]
     protected int height = 512;
+
+    [FormerlySerializedAs("Chunk size")]
+    [SerializeField]
+    protected int chunkSize = 16;
 
     [FormerlySerializedAs("TerrainOctaves")]
     [Header("Height Map")]
@@ -163,6 +168,7 @@ public class Generator : MonoBehaviour
     private MapData _moistureData;
 
     private Tile[,] _tiles;
+    private Dictionary<Vector2Int, Chunk> _chunks = new();
 
     private readonly List<TileGroup> _waters = new();
     private readonly List<TileGroup> _lands = new();
@@ -224,6 +230,7 @@ public class Generator : MonoBehaviour
 
     private void Start()
     {
+
         _seed = Random.Range(0, int.MaxValue);
 
         Initialize();
@@ -1014,6 +1021,7 @@ public class Generator : MonoBehaviour
     private void LoadTiles()
     {
         _tiles = new Tile[width, height];
+        _chunks.Clear();
 
         for (var x = 0; x < width; x++)
         {
@@ -1136,8 +1144,33 @@ public class Generator : MonoBehaviour
                     t.HeatType = HeatType.Warmest;
 
                 _tiles[x, y] = t;
+
+                // Define chunk coordinates
+
+                int chunkX = x / chunkSize;
+                int chunkY = y / chunkSize;
+                Vector2Int index = new Vector2Int(chunkX, chunkY);
+
+                // Create chunk
+                if (!_chunks.ContainsKey(index))
+                    _chunks[index] = new Chunk(new ChunkIndex(chunkX, chunkY));
+
+                _chunks[index].AddTile(t);
             }
         }
+        Debug.Log($"World divided into {_chunks.Count} chunks:");
+        foreach (var kvp in _chunks)
+        {
+            var chunk = kvp.Value;
+            Debug.Log($"Chunk {chunk.Index.X},{chunk.Index.Y} contains {chunk.Tiles.Count} tiles");
+
+            for (int i = 0; i < chunk.Tiles.Count; i++)
+            {
+                var t = chunk.Tiles[i];
+                Debug.Log($"Tile ({t.X},{t.Y}) Height: {t.HeightValue:F2}, Moisture: {t.MoistureValue:F2}");
+            }
+        }
+
     }
 
     private void UpdateNeighbors()
