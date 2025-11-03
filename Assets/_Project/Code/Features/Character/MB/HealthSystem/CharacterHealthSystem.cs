@@ -16,6 +16,7 @@ namespace CharacterSystems
             private set
             {
                 _currentHealth = Mathf.Clamp(value, 0, _maxHealth);
+                Debug.Log("CurrentHealth: " + _currentHealth);
                 OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
 
                 if (_currentHealth == 0)

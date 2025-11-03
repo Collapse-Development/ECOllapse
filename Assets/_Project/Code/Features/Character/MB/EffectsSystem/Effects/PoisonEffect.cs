@@ -1,4 +1,5 @@
 using CharacterSystems;
+using UnityEngine;
 
 namespace _Project.Code.Features.Character.MB.EffectsSystem.Effects
 {
@@ -29,8 +30,10 @@ namespace _Project.Code.Features.Character.MB.EffectsSystem.Effects
             _damageValue.Tick(dt);
             
             float damage = _damageValue.GetValue();
+            Debug.Log($"DamageValue:{damage}");
             if (damage > 0f && _healthSystem != null)
             {
+                Debug.Log($"DAMAGED");
                 _healthSystem.TakeDamage(damage);
             }
             

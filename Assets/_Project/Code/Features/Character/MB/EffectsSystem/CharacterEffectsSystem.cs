@@ -10,6 +10,7 @@ namespace _Project.Code.Features.Character.MB.EffectsSystem
         public event Action<ICharacterEffect> OnEffectAdded;
 
         private List<ICharacterEffect> _effects;
+        private List<ICharacterEffect> _cancelledEffects;
         private Character _character;
         
         public bool TryInitialize(Character character, CharacterSystemConfig cfg)
@@ -20,6 +21,7 @@ namespace _Project.Code.Features.Character.MB.EffectsSystem
             if (!_character.TryRegisterSystem<ICharacterEffectsSystem>(this)) return false;
             
             _effects = new List<ICharacterEffect>();
+            _cancelledEffects = new List<ICharacterEffect>();
             
             Debug.Log($"EffectsSystem initialized");
             return true;
@@ -38,6 +40,12 @@ namespace _Project.Code.Features.Character.MB.EffectsSystem
                     effect.Tick(dt);
                 }
             }
+
+            foreach (var t in _cancelledEffects)
+            {
+                _effects.Remove(t);
+            }
+            _cancelledEffects.Clear();
         }
         
         public List<T> GetEffectsOfType<T>() where T : class, ICharacterEffect
@@ -58,13 +66,13 @@ namespace _Project.Code.Features.Character.MB.EffectsSystem
         {
             effect.Initialize(_character);
             _effects.Add(effect);
-            effect.OnEffectCanceled += RemoveEffect;
+            effect.OnEffectCanceled += OnEffectCancelled;
             OnEffectAdded?.Invoke(effect);
         }
 
-        private void RemoveEffect(ICharacterEffect effect)
-        { 
-            _effects.Remove(effect);
+        private void OnEffectCancelled(ICharacterEffect effect)
+        {
+            _cancelledEffects.Add(effect);
         }
     }
 }
