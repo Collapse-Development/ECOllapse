@@ -41,12 +41,6 @@ namespace CharacterSystems
             return _resistanceModifiers.Remove(key);
         }
 
-        public float CalculateDamage(float incomingDamage)
-        {
-            float resistance = Mathf.Clamp01(TotalResistance);
-            return incomingDamage * (1f - resistance);
-        }
-
         public void ClearAllModifiers()
         {
             _resistanceModifiers.Clear();

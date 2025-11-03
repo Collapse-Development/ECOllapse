@@ -9,7 +9,6 @@ namespace CharacterSystems
 
         void AddResistance(string key, float value);
         bool RemoveResistance(string key);
-        float CalculateDamage(float incomingDamage);
         void ClearAllModifiers();
         bool TryGetResistance(string key, out float value);
     }
