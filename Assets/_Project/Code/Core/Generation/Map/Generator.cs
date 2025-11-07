@@ -16,10 +16,12 @@ public class Generator : MonoBehaviour
     [Header("Generator Values")]
     [SerializeField]
     protected int width = 512;
+    public int Width => width;
 
     [FormerlySerializedAs("Height")]
     [SerializeField]
     protected int height = 512;
+    public int Height => height;
 
     [FormerlySerializedAs("Chunk size")]
     [SerializeField]
@@ -70,14 +72,17 @@ public class Generator : MonoBehaviour
     [FormerlySerializedAs("ColdestValue")]
     [SerializeField]
     protected float coldestValue = 0.05f;
+    public float ColdestValue => coldestValue;
 
     [FormerlySerializedAs("ColderValue")]
     [SerializeField]
     protected float colderValue = 0.18f;
+    public float ColderValue => colderValue;
 
     [FormerlySerializedAs("ColdValue")]
     [SerializeField]
     protected float coldValue = 0.4f;
+    public float ColdValue => coldValue;
 
     [FormerlySerializedAs("WarmValue")]
     [SerializeField]
@@ -227,6 +232,22 @@ public class Generator : MonoBehaviour
             BiomeType.TropicalRainforest,
         },
     };
+
+    //Public accessors for external scripts
+    public Tile[,] GetTiles()
+    {
+        return _tiles;
+    }
+
+    public Dictionary<Vector2Int, Chunk> GetChunks()
+    {
+        return _chunks;
+    }
+
+    public int GetChunkSize()
+    {
+        return chunkSize;
+    }
 
     private void Start()
     {
