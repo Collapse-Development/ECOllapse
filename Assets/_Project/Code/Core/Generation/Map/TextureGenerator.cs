@@ -80,26 +80,20 @@ public static class TextureGenerator
         {
             for (var y = 0; y < 128; y++)
             {
-                if (x < 10)
-                    pixels[x + y * 128] = Ice;
-                else if (x < 20)
-                    pixels[x + y * 128] = Desert;
-                else if (x < 30)
-                    pixels[x + y * 128] = Savanna;
-                else if (x < 40)
-                    pixels[x + y * 128] = TropicalRainforest;
-                else if (x < 50)
-                    pixels[x + y * 128] = Tundra;
-                else if (x < 60)
-                    pixels[x + y * 128] = TemperateRainforest;
-                else if (x < 70)
-                    pixels[x + y * 128] = Grassland;
-                else if (x < 80)
-                    pixels[x + y * 128] = SeasonalForest;
-                else if (x < 90)
-                    pixels[x + y * 128] = BorealForest;
-                else if (x < 100)
-                    pixels[x + y * 128] = Woodland;
+                pixels[x + y * 128] = x switch
+                {
+                    < 10 => Ice,
+                    < 20 => Desert,
+                    < 30 => Savanna,
+                    < 40 => TropicalRainforest,
+                    < 50 => Tundra,
+                    < 60 => TemperateRainforest,
+                    < 70 => Grassland,
+                    < 80 => SeasonalForest,
+                    < 90 => BorealForest,
+                    < 100 => Woodland,
+                    _ => pixels[x + y * 128],
+                };
             }
         }
 
