@@ -1,54 +1,80 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 using _Project.Code.Features.Player.MB;       // Player
 using _Project.Code.Features.Character.MB;   // Character
-using CharacterSystems;                      // ICharacterHealthSystem, CharacterHealthSystem (конкретный класс)
-
-[RequireComponent(typeof(CanvasGroup))]
+using CharacterSystems;                      // ICharacterHealthSystem, CharacterHealthSystem
 public class HealthBar : MonoBehaviour
 {
     [SerializeField] GameUI gameUI;
     [SerializeField] Image fill;
 
+    Player player;
     ICharacterHealthSystem hs;
     Character lastChar;
 
     void Start()
     {
-        //if (gameUI) gameUI.OnInitialized += TryBind;
-        TryBind();
+        gameUI.OnInitialized += OnGameUIInitialized;
     }
 
     void OnDestroy()
     {
-        if (gameUI) gameUI.OnInitialized -= TryBind;
-        Unhook();
+        if (gameUI) gameUI.OnInitialized -= OnGameUIInitialized;
+        UnhookPlayer();
+        UnhookHealth();
     }
 
-    void Update()
+    // ----- Инициализация от GameUI / Player -----
+
+    void OnGameUIInitialized()
     {
-        // если ещё не привязались или персонаж у Player сменился — привязываемся
-        if (hs == null || gameUI?.GameSceneContext?.Player?.Character != lastChar)
-            TryBind();
+        HookPlayer(gameUI.GameSceneContext?.Player);
     }
 
-    void TryBind()
+    void HookPlayer(Player p)
     {
-        var ch = gameUI?.GameSceneContext?.Player?.Character;
-        if (ch == lastChar && hs != null) return;
+        if (player == p) return;
 
-        Unhook();
-        lastChar = ch;
-        hs = ch?.GetSystem<ICharacterHealthSystem>();
+        UnhookPlayer();
+        player = p;
 
-        if (hs == null) { fill.fillAmount = 1f; return; }
+        if (player != null)
+        {
+            player.OnCharacterUpdated += OnPlayerCharacterUpdated;
+            OnPlayerCharacterUpdated(null, player.Character); // привязываемся к текущему
+        }
+        else
+        {
+            SetFull();
+        }
+    }
+
+    void UnhookPlayer()
+    {
+        if (player != null)
+        {
+            player.OnCharacterUpdated -= OnPlayerCharacterUpdated;
+            player = null;
+        }
+    }
+
+    void OnPlayerCharacterUpdated(Character oldChar, Character newChar)
+    {
+        if (newChar == lastChar) return;
+
+        UnhookHealth();
+        lastChar = newChar;
+
+        hs = newChar?.GetSystem<ICharacterHealthSystem>();
+        if (hs == null) { SetFull(); return; }
 
         hs.OnHealthChanged += OnHealthChanged;
         hs.OnDeath += OnDeath;
     }
 
-    void Unhook()
+    // ----- Подписка на здоровье -----
+
+    void UnhookHealth()
     {
         if (hs != null)
         {
@@ -58,6 +84,11 @@ public class HealthBar : MonoBehaviour
         }
     }
 
-    void OnHealthChanged(float cur, float max) => fill.fillAmount = (max > 0f) ? cur / max : 0f;
+    void OnHealthChanged(float cur, float max) => SetRatio(cur, max);
     void OnDeath() => fill.fillAmount = 0f;
+
+    // ----- Утилиты -----
+
+    void SetRatio(float cur, float max) => fill.fillAmount = (max > 0f) ? Mathf.Clamp01(cur / max) : 0f;
+    void SetFull() => fill.fillAmount = 1f;
 }
