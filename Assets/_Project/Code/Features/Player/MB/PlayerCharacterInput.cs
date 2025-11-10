@@ -11,6 +11,7 @@ public class PlayerCharacterInput : MonoBehaviour
     private Player _player;
 
     private InputAction _moveAction;
+    private InputAction _runAction;
 
     private ICharacterMovementSystem _movementSystem;
 
@@ -49,5 +50,21 @@ public class PlayerCharacterInput : MonoBehaviour
         
         var inputDirection = _moveAction.ReadValue<Vector2>();
         _movementSystem.SetDirection(new Vector3(inputDirection.x, 0, inputDirection.y));
+    }
+        private void UpdateRunInput()
+    {
+        if (_movementSystem == null) return;
+        bool isRunning = _runAction?.ReadValue<float>() > 0.1f;
+        //_movementSystem.SetRunning(isRunning);
+    }
+
+    private void OnEnable()
+    {
+        _runAction?.Enable();
+    }
+
+    private void OnDisable()
+    {
+        _runAction?.Disable();
     }
 }
