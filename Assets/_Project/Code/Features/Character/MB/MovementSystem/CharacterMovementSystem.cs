@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events; // 🟩 ADDED
 
 namespace _Project.Code.Features.Character.MB.MovementSystem
 {
@@ -16,51 +17,33 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
                 UpdateIsMovingFlag();
             }
         }
-        
+
         [SerializeField, Min(0f)] private float _speed = 3.5f;
-        
+        [SerializeField, Min(0f)] private float _runMultiplier = 1.8f; // 🟩 ADDED — множитель скорости при беге
+
         public bool IsMoving { get; private set; }
+        public bool IsRunning { get; private set; } // 🟩 ADDED — флаг бега
 
         private Character _character;
         private Vector3 _direction = Vector3.zero;
-        private float _baseSpeed;
-        private float _frameSpeedMultiplier = 1;
         private Rigidbody _rb;
-        
-        public bool TryInitialize(Character character, CharacterSystemConfig cfg)
-        {
-            var movementCfg = cfg as CharacterMovementSystemConfig;
-            if (movementCfg == null)
-            {
-                Debug.Log("Fuck1");
-                return false;
-            }
-            
-            _character = character;
-            if (!_character.TryRegisterSystem<ICharacterMovementSystem>(this))
-            {
-                Debug.Log("Fuck2");
-                return false;
-            }
-            
-            _baseSpeed = movementCfg.Speed;
-            
-            Debug.Log($"MovementSystem initialized with config: Speed={_speed}");
-            return true;
-        }
-        
+
         private void Awake()
         {
+            _character = GetComponentInParent<Character>();
+
+            if (_character == null)
+            {
+                Debug.LogError($"[{nameof(CharacterMovementSystem)}] Character reference is not set.");
+                enabled = false;
+                return;
+            }
+
             _rb = GetComponent<Rigidbody>();
             _rb.isKinematic = true;
             _rb.freezeRotation = true;
-        }
 
-        private void Update()
-        {
-            Speed = _baseSpeed * _frameSpeedMultiplier;
-            
-            _frameSpeedMultiplier = 1;
+            _character.TryRegisterSystem<ICharacterMovementSystem>(this);
         }
 
         private void FixedUpdate()
@@ -72,7 +55,9 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
             if (dir.sqrMagnitude <= 1e-6f) return;
             dir.Normalize();
 
-            var delta = dir * (_speed * Time.fixedDeltaTime);
+            float currentSpeed = IsRunning ? _speed * _runMultiplier : _speed; // 🟩 ADDED
+
+            var delta = dir * (currentSpeed * Time.fixedDeltaTime);
             _rb.MovePosition(_rb.position + delta);
         }
 
@@ -82,9 +67,9 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
             UpdateIsMovingFlag();
         }
 
-        public void ApplyFrameSpeedMultiplier(float multiplier)
+        public void SetRunning(bool isRunning) // 🟩 ADDED — метод управления бегом
         {
-            _frameSpeedMultiplier *= multiplier;
+            IsRunning = isRunning;
         }
 
         private void UpdateIsMovingFlag()
@@ -92,4 +77,29 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
             IsMoving = _speed > 0f && _direction.sqrMagnitude > 0f;
         }
     }
+
+    // ========================================================================
+    // 🟩 ADDED — КЛАСС PLAYER INPUT (в том же файле)
+    // ========================================================================
+    public class PlayerInput : MonoBehaviour
+    {
+        [SerializeField] private CharacterMovementSystem _movementSystem;
+
+        public UnityEvent<bool> OnRunInput = new UnityEvent<bool>(); // 🟩 ADDED — событие Shift
+
+        private void Awake()
+        {
+            if (_movementSystem != null)
+            {
+                OnRunInput.AddListener(_movementSystem.SetRunning); // 🟩 ADDED
+            }
+        }
+
+        private void Update()
+        {
+            bool isRunning = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift); // 🟩 ADDED
+            OnRunInput.Invoke(isRunning); // 🟩 ADDED
+        }
+    }
 }
+
