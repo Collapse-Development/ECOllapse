@@ -61,7 +61,9 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
 
         private void Update()
         {
-            Speed = _baseSpeed * _frameSpeedMultiplier;
+            var runMultiplier = IsRunning ? _runMultiplier : 1;
+            
+            Speed = _baseSpeed * runMultiplier * _frameSpeedMultiplier;
             
             _frameSpeedMultiplier = 1;
         }
@@ -89,7 +91,6 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
         {
             IsRunning = isRunning;
         }
-
 
         public void ApplyFrameSpeedMultiplier(float multiplier)
         {
