@@ -11,6 +11,7 @@ public class PlayerCharacterInput : MonoBehaviour
     private Player _player;
 
     private InputAction _moveAction;
+    private InputAction _runAction;
 
     private ICharacterMovementSystem _movementSystem;
 
@@ -35,7 +36,12 @@ public class PlayerCharacterInput : MonoBehaviour
 
     private void SetUpActions()
     {
+        //Movement
         _moveAction = InputSystem.actions.FindAction("Move");
+        
+        _runAction = InputSystem.actions.FindAction("Run");
+        _runAction.started += (ctx) => UpdateRunInput(true);
+        _runAction.canceled += (ctx) => UpdateRunInput(false);
     }
 
     private void Update()
@@ -49,5 +55,12 @@ public class PlayerCharacterInput : MonoBehaviour
         
         var inputDirection = _moveAction.ReadValue<Vector2>();
         _movementSystem.SetDirection(new Vector3(inputDirection.x, 0, inputDirection.y));
+    }
+    private void UpdateRunInput(bool enabled)
+    {
+        Debug.Log("Enabled: " + enabled);
+        if (_movementSystem == null) return;
+        
+        _movementSystem.SetRunning(enabled);
     }
 }
