@@ -33,9 +33,20 @@ namespace CharacterSystems
             }
 
             var healthSystem = _character.GetSystem<ICharacterHealthSystem>();
+            var resistanceSystem = _character.GetSystem<ICharacterDamageResistanceSystem>(); // ✅ добавлено
+
             if (healthSystem != null)
             {
-                healthSystem.TakeDamage(damage);
+                // ✅ Учитываем сопротивление урону
+                float finalDamage = damage;
+                if (resistanceSystem != null)
+                {
+                    float resistance = Mathf.Clamp01(resistanceSystem.DamageResistance); // от 0 до 1
+                    finalDamage *= 1f - resistance;
+                    Debug.Log($"Damage adjusted by resistance ({resistance * 100f}%). Final damage: {finalDamage}");
+                }
+
+                healthSystem.TakeDamage(finalDamage);
             }
             else
             {
@@ -46,3 +57,4 @@ namespace CharacterSystems
         }
     }
 }
+
