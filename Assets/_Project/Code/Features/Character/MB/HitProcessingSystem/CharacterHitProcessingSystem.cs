@@ -33,9 +33,30 @@ namespace CharacterSystems
             }
 
             var healthSystem = _character.GetSystem<ICharacterHealthSystem>();
+            var resistanceSystem = _character.GetSystem<ICharacterDamageResistanceSystem>();
+            var config = _character.GetConfig<CharacterHitProcessingSystemConfig>();
+
             if (healthSystem != null)
             {
-                healthSystem.TakeDamage(damage);
+                float finalDamage = damage;
+
+                if (resistanceSystem != null && config != null)
+                {
+                    float R = resistanceSystem.DamageResistance; // читаем сопротивление
+                    float k = config.ResistanceK;                // коэффициент для формулы
+                    float Dabs = config.AbsoluteAbsorbDamage;    // абсолютное поглощение
+
+                    // === FORMULA FROM GDD ===
+                    // EffectiveDamage = max(0, Dbase * e^(-kR) - Dabs)
+                    finalDamage = damage * Mathf.Exp(-k * R) - Dabs;
+                    finalDamage = Mathf.Max(0f, finalDamage);
+
+                    Debug.Log(
+                        $"[HitProcessingSystem] Base={damage}, R={R}, k={k}, Dabs={Dabs}, Final={finalDamage}"
+                    );
+                }
+
+                healthSystem.TakeDamage(finalDamage);
             }
             else
             {
