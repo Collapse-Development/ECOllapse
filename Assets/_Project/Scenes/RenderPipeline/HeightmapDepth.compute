@@ -1,0 +1,93 @@
+#pragma kernel CSMain
+
+uint2 _ScreenSize;
+
+float3 _CameraPos;
+float3 _CameraForward;
+float3 _CameraUp;
+float3 _CameraRight;
+float _CameraZoom;
+Texture2D<float4> _HeightmapTexture;
+Texture2D<float4> _HeightmapMipTexture;
+uint2 _TextureSize;
+RWTexture2D<float4> _RenderTarget;
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= _ScreenSize.x || id.y >= _ScreenSize.y) {
+        _RenderTarget[id.xy] = float4(0.0, 0.0, 0.0, 0.0);
+        return;
+    }
+    float z = _CameraZoom;
+    int2 hId = id.xy - _ScreenSize * 0.5;
+    float3 start =
+        _CameraPos + 
+        _CameraRight * hId.x * z
+        + _CameraUp * hId.y * z;
+
+    float3 ray = _CameraForward;
+    float3 pos = start;
+    float dt_step = 1;
+    float dist = 0;
+    int it = 0;
+
+    // Find 2d intersection with square
+    float2 minB = float2(0, 0);
+    float2 maxB = float2(_TextureSize.x, _TextureSize.y);
+    float2 o = float2(start.x, start.z);
+    bool inside = all(o >= minB && o <= maxB);
+    if (!inside) {
+        float2 d = float2(ray.x, ray.z);
+
+        float2 invD = 1.0 / d;
+
+        float2 t0s = (minB - o) * invD;
+        float2 t1s = (maxB - o) * invD;
+
+        float2 tminV = min(t0s, t1s);
+        float2 tmaxV = max(t0s, t1s);
+
+        float t_entry = max(tminV.x, tminV.y);
+        float t_exit  = min(tmaxV.x, tmaxV.y);
+
+        bool hit = t_entry <= t_exit;
+
+        float2 hitPos = o + d * t_entry;
+        if (!hit) {
+            for (int i = 0; i < _ScreenSize.y; i++) {
+                _RenderTarget[int2(id.x, i)] = float4(0.0, 0.0, 0.0, 0.0);
+            }
+            return;
+        }
+        // hack
+        float t_entry_clamped = max(t_entry, 0.0); // ensure forward only
+        pos = start + ray * t_entry_clamped;       // full 3D position
+        dist = t_entry_clamped;                    // distance along ray
+    }
+
+    [loop]
+    while (
+        it < 512 
+        // Since we already inside texture - stop iter on exit
+        && pos.x >= -0.00001 && pos.x <= _TextureSize.x
+        && pos.z >= -0.00001 && pos.z <= _TextureSize.y
+    ) {
+        // float2 uv = pos.xz / float2(_TextureSize);
+        float h = _HeightmapMipTexture[pos.xz].r * 256.0;
+        // SampleLevel(linearClampSampler, uv, 0);
+        // float h = tex2D(_HeightmapTexture, uv).a * 255.0;
+        float d = h - pos.y;
+        if (d > 0) {
+            // todo: idk why, but recovering from depth is not possible. Probably because of sRGB? 
+            _RenderTarget[int2(id.x, id.y)] = float4(pos.xyz / 512.0, 1.0 - (dist / 256.0));
+            return;
+        }
+        dist += dt_step;
+        it += 1;
+        pos += dt_step * _CameraForward;
+    }
+    _RenderTarget[int2(id.x, id.y)] = float4(0.0, 0.0, 0.0, 0.0);
+}
+
+// TODO: MIP MAP MAPS NOT USED - VERY UNOPTIMAL! BUT I HAVE NO TIME LEFT FOR NOW
