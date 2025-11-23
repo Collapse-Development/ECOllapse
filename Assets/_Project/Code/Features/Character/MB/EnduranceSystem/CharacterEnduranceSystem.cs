@@ -9,6 +9,7 @@ namespace _Project.Code.Features.Character.MB.EnduranceSystem
         [Header("Endurance Settings")]
         [SerializeField] private float maxEndurance = 100f;
         [SerializeField] private float minEndurance = -20f;
+        [SerializeField] private float baseStaminaForRegen = 50f; // Временное значение вместо системы выносливости
         
         [Header("Current State")]
         [SerializeField] private float currentEndurance;
@@ -115,12 +116,9 @@ namespace _Project.Code.Features.Character.MB.EnduranceSystem
                 
                 if (_isInitialized && !isStunned && currentEndurance < maxEndurance)
                 {
-                    // Получаем систему выносливости для расчета регенерации
-                    var staminaSystem = _character?.GetSystem<IStaminaSystem>();
-                    float stamina = staminaSystem?.CurrentStamina ?? 50f; // Дефолтное значение
-                    
+                    // Временная реализация без зависимости от системы выносливости
                     // Формула: EnduranceRegen = 10 + (Stamina/10)
-                    float regenAmount = 10f + (stamina / 10f);
+                    float regenAmount = 10f + (baseStaminaForRegen / 10f);
                     currentEndurance = Mathf.Min(maxEndurance, currentEndurance + regenAmount * Time.deltaTime);
                 }
             }
@@ -145,20 +143,15 @@ namespace _Project.Code.Features.Character.MB.EnduranceSystem
         
         private void ApplyStunEffects(bool apply)
         {
-            // Интеграция с другими системами:
-            // - Отключение контроля персонажем
-            // - Визуальные эффекты
-            // - Анимации
-            
+            // Базовая реализация эффектов оглушения
             if (apply)
             {
-                // Отключаем управление
-                // Включаем эффекты оглушения
+                // Можно добавить визуальные эффекты или звуки
+                Debug.Log("STUN: Player lost control");
             }
             else
             {
-                // Включаем управление
-                // Выключаем эффекты оглушения
+                Debug.Log("STUN: Player regained control");
             }
         }
         
@@ -168,6 +161,19 @@ namespace _Project.Code.Features.Character.MB.EnduranceSystem
             // Чем меньше стойкости, тем сильнее откидывание
             float normalizedEndurance = currentEndurance / maxEndurance;
             return 2f - normalizedEndurance; // От 1x до 2x множитель
+        }
+        
+        // Метод для будущей интеграции с системой выносливости
+        public void ConnectToStaminaSystem(float staminaValue)
+        {
+            baseStaminaForRegen = staminaValue;
+            Debug.Log("Endurance system connected to stamina system");
+        }
+        
+        // Метод для ручной установки выносливости (временно)
+        public void SetBaseStamina(float stamina)
+        {
+            baseStaminaForRegen = Mathf.Max(0f, stamina);
         }
     }
 }
