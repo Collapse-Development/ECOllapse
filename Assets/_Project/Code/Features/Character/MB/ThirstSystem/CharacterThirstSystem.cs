@@ -39,15 +39,6 @@ namespace _Project.Code.Features.Character.MB.ThirstSystem
             return true;
         }
         
-        public void Initialize(Character character)
-        {
-            _character = character;
-            _character.TryRegisterSystem<IThirstSystem>(this);
-            currentHydration = maxHydration;
-            StartCoroutine(HydrationDecrementCoroutine());
-            _isInitialized = true;
-        }
-        
         // IThirstSystem implementation
         public float CurrentHydration => currentHydration;
         public float MaxHydration => maxHydration;
