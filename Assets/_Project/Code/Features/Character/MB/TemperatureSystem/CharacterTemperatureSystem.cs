@@ -41,15 +41,6 @@ namespace _Project.Code.Features.Character.MB.TemperatureSystem
             return true;
         }
         
-        public void Initialize(Character character)
-        {
-            _character = character;
-            _character.TryRegisterSystem<ITemperatureSystem>(this);
-            playerTemperature = basePlayerTemperature;
-            StartCoroutine(TemperatureUpdateCoroutine());
-            _isInitialized = true;
-        }
-        
         // ITemperatureSystem implementation
         public float PlayerTemperature => playerTemperature;
         public float EnvironmentTemperature => environmentTemperature;
