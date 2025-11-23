@@ -40,15 +40,6 @@ namespace _Project.Code.Features.Character.MB.EnduranceSystem
             return true;
         }
         
-        public void Initialize(Character character)
-        {
-            _character = character;
-            _character.TryRegisterSystem<IEnduranceSystem>(this);
-            currentEndurance = maxEndurance;
-            StartCoroutine(EnduranceRegenCoroutine());
-            _isInitialized = true;
-        }
-        
         // IEnduranceSystem implementation
         public float CurrentEndurance => currentEndurance;
         public float MaxEndurance => maxEndurance;
