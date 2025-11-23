@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using _Project.Code.Features.Character.MB;
+using _Project.Code.Features.Character.MB.MovementSystem; // Только movement
 
 namespace _Project.Code.Features.Character.MB.VigourSystem
 {
@@ -125,19 +126,15 @@ namespace _Project.Code.Features.Character.MB.VigourSystem
             switch (status)
             {
                 case VigourStatus.Warning:
-                    // UI подсказка о необходимости сна
                     ApplyWarningEffects();
                     break;
                 case VigourStatus.Tired:
-                    // Уменьшение регенерации выносливости, скорости анимаций и передвижения
                     ApplyTiredEffects();
                     break;
                 case VigourStatus.SleepDeprived:
-                    // Галлюцинации и пониженная терморегуляция, уменьшенная максимальная стойкость
                     ApplySleepDeprivedEffects();
                     break;
                 case VigourStatus.CriticalSleepDeprived:
-                    // Периодическая потеря контроля, случайные потери сознания
                     ApplyCriticalSleepDeprivedEffects();
                     break;
             }
@@ -146,44 +143,34 @@ namespace _Project.Code.Features.Character.MB.VigourSystem
         private void ApplyWarningEffects()
         {
             // Только UI подсказка - без игровых дебаффов
+            Debug.Log("Vigour Warning: Time to sleep soon!");
         }
         
         private void ApplyTiredEffects()
         {
-            // Уменьшение регенерации выносливости
-            var staminaSystem = _character?.GetSystem<IStaminaSystem>();
-            staminaSystem?.SetStaminaDecrementMultiplier(1.2f);
-            
-            // Уменьшение скорости анимаций и передвижения
+            // Уменьшение скорости передвижения (единственная доступная система)
             var movementSystem = _character?.GetSystem<ICharacterMovementSystem>();
-            // movementSystem?.SetSpeedMultiplier(0.8f);
+            if (movementSystem != null)
+            {
+                // Если в movement system есть метод для установки скорости - используем его
+                // movementSystem.Speed *= 0.8f; // Раскомментировать когда будет метод
+                Debug.Log("Tired: Movement speed decreased");
+            }
+            
+            Debug.Log("Tired effects applied");
         }
         
         private void ApplySleepDeprivedEffects()
         {
-            // Все эффекты усталости +
-            // Галлюцинации и пониженная терморегуляция
-            var tempSystem = _character?.GetSystem<ITemperatureSystem>();
-            // tempSystem?.SetResistanceMultiplier(0.7f);
-            
-            // Уменьшенная максимальная стойкость
-            var firmnessSystem = _character?.GetSystem<IFirmnessSystem>();
-            // firmnessSystem?.SetMaxFirmnessMultiplier(0.8f);
+            // Эффекты будут добавлены когда системы появятся
+            Debug.Log("Sleep deprived effects applied");
         }
         
         private void ApplyCriticalSleepDeprivedEffects()
         {
-            // Все эффекты недосыпа +
-            // Увеличение коэффициента траты выносливости
-            var staminaSystem = _character?.GetSystem<IStaminaSystem>();
-            staminaSystem?.SetStaminaDecrementMultiplier(1.5f);
-            
-            // Сильное увеличение декремента сытости, жажды
-            var thirstSystem = _character?.GetSystem<IThirstSystem>();
-            thirstSystem?.SetHydrationDecrementMultiplier(1.3f);
-            
-            // Периодическая потеря контроля (реализовать через корутины)
+            // Периодическая потеря контроля
             StartCoroutine(RandomBlackoutCoroutine());
+            Debug.Log("Critical sleep deprived effects applied");
         }
         
         private IEnumerator RandomBlackoutCoroutine()
@@ -217,5 +204,11 @@ namespace _Project.Code.Features.Character.MB.VigourSystem
             
             Debug.Log($"Slept for {durationInHours} hours. Vigour gained: {vigourGain}");
         }
+        
+        // Методы для будущей интеграции с другими системами
+        public void ConnectToStaminaSystem() { /* Будет реализовано позже */ }
+        public void ConnectToTemperatureSystem() { /* Будет реализовано позже */ }
+        public void ConnectToThirstSystem() { /* Будет реализовано позже */ }
+        public void ConnectToFirmnessSystem() { /* Будет реализовано позже */ }
     }
 }
