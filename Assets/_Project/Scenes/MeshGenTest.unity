@@ -992,7 +992,85 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
+  biomePrefabsList:
+  - biomeType: 0
+    prefab: {fileID: 2119942110720410539, guid: 8dc07f098de0d8c409d881020e415067, type: 3}
+  - biomeType: 1
+    prefab: {fileID: 2119942110720410539, guid: 06a7eb510e82af7428493b81b1314418, type: 3}
+  - biomeType: 2
+    prefab: {fileID: 2119942110720410539, guid: 5ddecb17a8ccd2e4ca74c323b675bd57, type: 3}
+  - biomeType: 3
+    prefab: {fileID: 2119942110720410539, guid: c56170d26e5297e4ca9a07b937497da1, type: 3}
+  - biomeType: 4
+    prefab: {fileID: 2119942110720410539, guid: 3fe72567c79443f4eb7d0535940f9a83, type: 3}
+  - biomeType: 5
+    prefab: {fileID: 2119942110720410539, guid: 9612eb9b23e0050499739b64a19e8e58, type: 3}
+  - biomeType: 6
+    prefab: {fileID: 2119942110720410539, guid: f6e152d4ee705d4438ced7382304acc1, type: 3}
+  - biomeType: 7
+    prefab: {fileID: 2119942110720410539, guid: e1c1bcc419fa26b4c88e3f4bbdbf638b, type: 3}
+  - biomeType: 7
+    prefab: {fileID: 2119942110720410539, guid: e1c1bcc419fa26b4c88e3f4bbdbf638b, type: 3}
+  - biomeType: 9
+    prefab: {fileID: 8758154233791923361, guid: e92357a83678051458c54daef6796d80, type: 3}
   autoGenerate: 1
+--- !u!1001 &1713175579220935807
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6756069151628747682, guid: e92357a83678051458c54daef6796d80, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -13.53786
+      objectReference: {fileID: 0}
+    - target: {fileID: 6756069151628747682, guid: e92357a83678051458c54daef6796d80, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 62.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6756069151628747682, guid: e92357a83678051458c54daef6796d80, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 229.44083
+      objectReference: {fileID: 0}
+    - target: {fileID: 6756069151628747682, guid: e92357a83678051458c54daef6796d80, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6756069151628747682, guid: e92357a83678051458c54daef6796d80, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6756069151628747682, guid: e92357a83678051458c54daef6796d80, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6756069151628747682, guid: e92357a83678051458c54daef6796d80, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6756069151628747682, guid: e92357a83678051458c54daef6796d80, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6756069151628747682, guid: e92357a83678051458c54daef6796d80, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6756069151628747682, guid: e92357a83678051458c54daef6796d80, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8758154233791923361, guid: e92357a83678051458c54daef6796d80, type: 3}
+      propertyPath: m_Name
+      value: Plane
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e92357a83678051458c54daef6796d80, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1001,3 +1079,4 @@ SceneRoots:
   - {fileID: 1545301933}
   - {fileID: 1817995343}
   - {fileID: 2128113817}
+  - {fileID: 1713175579220935807}

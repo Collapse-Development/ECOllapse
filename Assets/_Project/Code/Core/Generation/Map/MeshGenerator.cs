@@ -16,10 +16,21 @@ namespace _Project.Code.Core.Generation.Map
         public Material chunkMaterial;
         public Gradient colorGradient;
 
+        [Header("Biome Prefabs")]
+        [SerializeField] private List<BiomePrefab> biomePrefabsList = new();
+        [System.Serializable] public class BiomePrefab { public BiomeType biomeType; public GameObject prefab; }
+
         [Header("Debug")]
         public bool autoGenerate = true;
 
         private int chunkSize;
+
+        private Dictionary<BiomeType, GameObject> biomePrefabs = new Dictionary<BiomeType, GameObject>();
+
+        private void Awake()
+        {
+            foreach (var p in biomePrefabsList) if (p?.prefab) biomePrefabs[p.biomeType] = p.prefab;
+        }
 
         private IEnumerator Start()
         {
@@ -133,6 +144,8 @@ namespace _Project.Code.Core.Generation.Map
 
                 mesh.RecalculateBounds();
                 mf.sharedMesh = mesh;
+
+                SpawnBiomeTilesForChunk(chunkObject, index, tiles);
             }
 
             Debug.Log("[WorldMesh] Generation complete!");
@@ -163,5 +176,36 @@ namespace _Project.Code.Core.Generation.Map
 
             mesh.normals = normals;
         }
+        private void SpawnBiomeTilesForChunk(GameObject chunkObject, Vector2Int chunkIndex, Tile[,] tiles)
+        {
+            var biomeRoot = new GameObject("BiomeTiles");
+            biomeRoot.transform.SetParent(chunkObject.transform, false);
+
+            for (int y = 0; y < chunkSize; y++)
+            {
+                for (int x = 0; x < chunkSize; x++)
+                {
+                    int globalX = Mathf.Min(chunkIndex.x * chunkSize + x, tiles.GetLength(0) - 1);
+                    int globalY = Mathf.Min(chunkIndex.y * chunkSize + y, tiles.GetLength(1) - 1);
+
+                    var tile = tiles[globalX, globalY];
+
+                    // воду пропускаем
+                    if (tile.HeightType < HeightType.Sand) continue;
+
+                    if (!biomePrefabs.TryGetValue(tile.BiomeType, out var prefab) || prefab == null)
+                        continue;
+
+                    float worldY = tile.HeightValue * heightMultiplier;
+
+                    Vector3 worldPos =
+                        chunkObject.transform.position +
+                        new Vector3((x + 0.5f) * tileSize, worldY + 0.05f, (y + 0.5f) * tileSize);
+
+                    Instantiate(prefab, worldPos, Quaternion.identity, biomeRoot.transform);
+                }
+            }
+        }
+
     }
 }
