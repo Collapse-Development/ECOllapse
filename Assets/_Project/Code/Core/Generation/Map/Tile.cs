@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using _Project.Code.Core.Generation.Map;
 
 public enum HeightType
 {
