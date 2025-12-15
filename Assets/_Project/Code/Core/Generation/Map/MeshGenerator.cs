@@ -32,9 +32,9 @@ public class MeshGenerator : MonoBehaviour
             return;
         }
 
-        var chunks = worldGenerator.GetChunks();
-        chunkSize = worldGenerator.GetChunkSize();
-        var tiles = worldGenerator.GetTiles();
+        var chunks = worldGenerator.Chunks;
+        chunkSize = worldGenerator.ChunkSize;
+        var tiles = worldGenerator.Tiles;
 
         Debug.Log($"[WorldMesh] Generating {chunks.Count} chunk meshes...");
 
