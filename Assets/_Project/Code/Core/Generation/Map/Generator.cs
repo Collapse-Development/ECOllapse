@@ -20,10 +20,10 @@ public class Generator : MonoBehaviour
     [FormerlySerializedAs("Height")]
     [SerializeField]
     protected int height = 512;
-
     [FormerlySerializedAs("Chunk size")]
     [SerializeField]
     protected int chunkSize = 16;
+    public int ChunkSize => chunkSize;
 
     [FormerlySerializedAs("TerrainOctaves")]
     [Header("Height Map")]
@@ -167,8 +167,8 @@ public class Generator : MonoBehaviour
     private MapData _heatData;
     private MapData _moistureData;
 
-    private Tile[,] _tiles;
-    private Dictionary<Vector2Int, Chunk> _chunks = new();
+    public Tile[,] Tiles;
+    public Dictionary<Vector2Int, Chunk> Chunks = new();
 
     private readonly List<TileGroup> _waters = new();
     private readonly List<TileGroup> _lands = new();
@@ -253,22 +253,22 @@ public class Generator : MonoBehaviour
         heightMapRenderer.materials[0].mainTexture = TextureGenerator.GetHeightMapTexture(
             width,
             height,
-            _tiles
+            Tiles
         );
         heatMapRenderer.materials[0].mainTexture = TextureGenerator.GetHeatMapTexture(
             width,
             height,
-            _tiles
+            Tiles
         );
         moistureMapRenderer.materials[0].mainTexture = TextureGenerator.GetMoistureMapTexture(
             width,
             height,
-            _tiles
+            Tiles
         );
         biomeMapRenderer.materials[0].mainTexture = TextureGenerator.GetBiomeMapTexture(
             width,
             height,
-            _tiles,
+            Tiles,
             coldestValue,
             colderValue,
             coldValue
@@ -319,7 +319,7 @@ public class Generator : MonoBehaviour
         {
             for (var y = 0; y < height; y++)
             {
-                _tiles[x, y].UpdateBiomeBitmask();
+                Tiles[x, y].UpdateBiomeBitmask();
             }
         }
     }
@@ -335,10 +335,10 @@ public class Generator : MonoBehaviour
         {
             for (var y = 0; y < height; y++)
             {
-                if (!_tiles[x, y].Collidable)
+                if (!Tiles[x, y].Collidable)
                     continue;
 
-                var t = _tiles[x, y];
+                var t = Tiles[x, y];
                 t.BiomeType = GetBiomeType(t);
             }
         }
@@ -355,26 +355,26 @@ public class Generator : MonoBehaviour
             var x2 = MathHelper.Mod(t.X + curr, width);
             var y = t.Y;
 
-            AddMoisture(_tiles[x1, y], 0.025f / (center - new Vector2(x1, y)).magnitude);
+            AddMoisture(Tiles[x1, y], 0.025f / (center - new Vector2(x1, y)).magnitude);
 
             for (var i = 0; i < curr; i++)
             {
                 AddMoisture(
-                    _tiles[x1, MathHelper.Mod(y + i + 1, height)],
+                    Tiles[x1, MathHelper.Mod(y + i + 1, height)],
                     0.025f / (center - new Vector2(x1, MathHelper.Mod(y + i + 1, height))).magnitude
                 );
                 AddMoisture(
-                    _tiles[x1, MathHelper.Mod(y - (i + 1), height)],
+                    Tiles[x1, MathHelper.Mod(y - (i + 1), height)],
                     0.025f
                         / (center - new Vector2(x1, MathHelper.Mod(y - (i + 1), height))).magnitude
                 );
 
                 AddMoisture(
-                    _tiles[x2, MathHelper.Mod(y + i + 1, height)],
+                    Tiles[x2, MathHelper.Mod(y + i + 1, height)],
                     0.025f / (center - new Vector2(x2, MathHelper.Mod(y + i + 1, height))).magnitude
                 );
                 AddMoisture(
-                    _tiles[x2, MathHelper.Mod(y - (i + 1), height)],
+                    Tiles[x2, MathHelper.Mod(y - (i + 1), height)],
                     0.025f
                         / (center - new Vector2(x2, MathHelper.Mod(y - (i + 1), height))).magnitude
                 );
@@ -411,7 +411,7 @@ public class Generator : MonoBehaviour
         {
             for (var y = 0; y < height; y++)
             {
-                var t = _tiles[x, y];
+                var t = Tiles[x, y];
                 if (t.HeightType == HeightType.River)
                 {
                     AddMoisture(t, 60);
@@ -457,7 +457,7 @@ public class Generator : MonoBehaviour
         {
             for (var y = 0; y < height; y++)
             {
-                var t = _tiles[x, y];
+                var t = Tiles[x, y];
 
                 if (t.Rivers.Count <= 1)
                     continue;
@@ -520,7 +520,7 @@ public class Generator : MonoBehaviour
             // Get a random tile
             var x = Random.Range(0, width);
             var y = Random.Range(0, height);
-            var tile = _tiles[x, y];
+            var tile = Tiles[x, y];
 
             // validate the tile
             if (!tile.Collidable)
@@ -1020,8 +1020,8 @@ public class Generator : MonoBehaviour
     // Build a Tile array from our data
     private void LoadTiles()
     {
-        _tiles = new Tile[width, height];
-        _chunks.Clear();
+        Tiles = new Tile[width, height];
+        Chunks.Clear();
 
         for (var x = 0; x < width; x++)
         {
@@ -1143,7 +1143,7 @@ public class Generator : MonoBehaviour
                 else
                     t.HeatType = HeatType.Warmest;
 
-                _tiles[x, y] = t;
+                Tiles[x, y] = t;
 
                 // Define chunk coordinates
 
@@ -1152,14 +1152,14 @@ public class Generator : MonoBehaviour
                 Vector2Int index = new Vector2Int(chunkX, chunkY);
 
                 // Create chunk
-                if (!_chunks.ContainsKey(index))
-                    _chunks[index] = new Chunk(new ChunkIndex(chunkX, chunkY));
+                if (!Chunks.ContainsKey(index))
+                    Chunks[index] = new Chunk(new ChunkIndex(chunkX, chunkY));
 
-                _chunks[index].AddTile(t);
+                Chunks[index].AddTile(t);
             }
         }
-        Debug.Log($"World divided into {_chunks.Count} chunks:");
-        foreach (var kvp in _chunks)
+        Debug.Log($"World divided into {Chunks.Count} chunks:");
+        foreach (var kvp in Chunks)
         {
             var chunk = kvp.Value;
             Debug.Log($"Chunk {chunk.Index.X},{chunk.Index.Y} contains {chunk.Tiles.Count} tiles");
@@ -1179,7 +1179,7 @@ public class Generator : MonoBehaviour
         {
             for (var y = 0; y < height; y++)
             {
-                var t = _tiles[x, y];
+                var t = Tiles[x, y];
 
                 t.Top = GetTop(t);
                 t.Bottom = GetBottom(t);
@@ -1195,7 +1195,7 @@ public class Generator : MonoBehaviour
         {
             for (var y = 0; y < height; y++)
             {
-                _tiles[x, y].UpdateBitmask();
+                Tiles[x, y].UpdateBitmask();
             }
         }
     }
@@ -1209,7 +1209,7 @@ public class Generator : MonoBehaviour
         {
             for (var y = 0; y < height; y++)
             {
-                var t = _tiles[x, y];
+                var t = Tiles[x, y];
 
                 //Tile already flood filled, skip
                 if (t.FloodFilled)
@@ -1280,22 +1280,22 @@ public class Generator : MonoBehaviour
 
     private Tile GetTop(Tile t)
     {
-        return _tiles[t.X, MathHelper.Mod(t.Y - 1, height)];
+        return Tiles[t.X, MathHelper.Mod(t.Y - 1, height)];
     }
 
     private Tile GetBottom(Tile t)
     {
-        return _tiles[t.X, MathHelper.Mod(t.Y + 1, height)];
+        return Tiles[t.X, MathHelper.Mod(t.Y + 1, height)];
     }
 
     private Tile GetLeft(Tile t)
     {
-        return _tiles[MathHelper.Mod(t.X - 1, width), t.Y];
+        return Tiles[MathHelper.Mod(t.X - 1, width), t.Y];
     }
 
     private Tile GetRight(Tile t)
     {
-        return _tiles[MathHelper.Mod(t.X + 1, width), t.Y];
+        return Tiles[MathHelper.Mod(t.X + 1, width), t.Y];
     }
 
     public float GetHeightValue(Tile tile)
