@@ -12,14 +12,16 @@ namespace CharacterSystems
         private ICharacterHealthSystem _healthSystem;
 
         public event Action OnHit;
-        
+
         public bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
-            if (cfg is not CharacterHitProcessingSystemConfig systemCfg) return false;
-            
+            if (cfg is not CharacterHitProcessingSystemConfig systemCfg)
+                return false;
+
             _character = character;
-            if (!_character.TryRegisterSystem<ICharacterHitProcessingSystem>(this)) return false;
-            
+            if (!_character.TryRegisterSystem<ICharacterHitProcessingSystem>(this))
+                return false;
+
             Debug.Log($"HitProcessing initialized");
             return true;
         }
@@ -33,15 +35,29 @@ namespace CharacterSystems
             }
 
             var healthSystem = _character.GetSystem<ICharacterHealthSystem>();
+            var resistanceSystem = _character.GetSystem<ICharacterDamageResistanceSystem>();
+
             if (healthSystem != null)
             {
-                healthSystem.TakeDamage(damage);
+                float finalDamage = damage;
+
+                if (resistanceSystem != null)
+                {
+                    float R = resistanceSystem.Resistance; 
+                    float k = 0.05f; 
+
+                    finalDamage = damage * Mathf.Exp(-k * R);
+
+                    finalDamage = Mathf.Max(0f, finalDamage);
+                }
+
+                healthSystem.TakeDamage(finalDamage);
             }
             else
             {
                 Debug.LogWarning("HealthSystem не найдена, урон не применён");
             }
-            
+
             OnHit?.Invoke();
         }
     }
