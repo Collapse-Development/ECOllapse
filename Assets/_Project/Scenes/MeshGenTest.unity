@@ -961,116 +961,29 @@ MonoBehaviour:
   worldGenerator: {fileID: 1817995342}
   tileSize: 1
   heightMultiplier: 10
-  chunkMaterial: {fileID: 2100000, guid: 38e5ffe5d26676c428465f8421bb3488, type: 2}
-  colorGradient:
-    serializedVersion: 2
-    key0: {r: 1, g: 0.1110103, b: 0, a: 1}
-    key1: {r: 1, g: 1, b: 1, a: 1}
-    key2: {r: 0, g: 0, b: 0, a: 0}
-    key3: {r: 0, g: 0, b: 0, a: 0}
-    key4: {r: 0, g: 0, b: 0, a: 0}
-    key5: {r: 0, g: 0, b: 0, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
-    key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 0
-    ctime1: 65535
-    ctime2: 0
-    ctime3: 0
-    ctime4: 0
-    ctime5: 0
-    ctime6: 0
-    ctime7: 0
-    atime0: 0
-    atime1: 65535
-    atime2: 0
-    atime3: 0
-    atime4: 0
-    atime5: 0
-    atime6: 0
-    atime7: 0
-    m_Mode: 0
-    m_ColorSpace: -1
-    m_NumColorKeys: 2
-    m_NumAlphaKeys: 2
-  biomePrefabsList:
-  - biomeType: 0
-    prefab: {fileID: 2119942110720410539, guid: 8dc07f098de0d8c409d881020e415067, type: 3}
-  - biomeType: 1
-    prefab: {fileID: 2119942110720410539, guid: 06a7eb510e82af7428493b81b1314418, type: 3}
-  - biomeType: 2
-    prefab: {fileID: 2119942110720410539, guid: 5ddecb17a8ccd2e4ca74c323b675bd57, type: 3}
-  - biomeType: 3
-    prefab: {fileID: 2119942110720410539, guid: c56170d26e5297e4ca9a07b937497da1, type: 3}
-  - biomeType: 4
-    prefab: {fileID: 2119942110720410539, guid: 3fe72567c79443f4eb7d0535940f9a83, type: 3}
-  - biomeType: 5
-    prefab: {fileID: 2119942110720410539, guid: 9612eb9b23e0050499739b64a19e8e58, type: 3}
-  - biomeType: 6
-    prefab: {fileID: 2119942110720410539, guid: f6e152d4ee705d4438ced7382304acc1, type: 3}
-  - biomeType: 7
-    prefab: {fileID: 2119942110720410539, guid: e1c1bcc419fa26b4c88e3f4bbdbf638b, type: 3}
-  - biomeType: 7
-    prefab: {fileID: 2119942110720410539, guid: e1c1bcc419fa26b4c88e3f4bbdbf638b, type: 3}
-  - biomeType: 9
-    prefab: {fileID: 8758154233791923361, guid: e92357a83678051458c54daef6796d80, type: 3}
+  chunkMaterial: {fileID: -876546973899608171, guid: fdd12af54f3686c4ead18527951a8a29, type: 3}
+  biomeColors:
+  - type: 0
+    color: {r: 0.93333334, g: 0.85490197, b: 0.50980395, a: 1}
+  - type: 1
+    color: {r: 0.69411767, g: 0.81960785, b: 0.43137255, a: 1}
+  - type: 2
+    color: {r: 0.25882354, g: 0.48235294, b: 0.09803922, a: 1}
+  - type: 3
+    color: {r: 0.6431373, g: 0.88235295, b: 0.3882353, a: 1}
+  - type: 4
+    color: {r: 0.54509807, g: 0.6862745, b: 0.3529412, a: 1}
+  - type: 5
+    color: {r: 0.28627452, g: 0.39215687, b: 0.13725491, a: 1}
+  - type: 6
+    color: {r: 0.11372549, g: 0.28627452, b: 0.15686275, a: 1}
+  - type: 7
+    color: {r: 0.37254903, g: 0.4509804, b: 0.24313726, a: 1}
+  - type: 8
+    color: {r: 0.3764706, g: 0.5137255, b: 0.4392157, a: 1}
+  - type: 0
+    color: {r: 1, g: 1, b: 1, a: 1}
   autoGenerate: 1
---- !u!1001 &1713175579220935807
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 6756069151628747682, guid: e92357a83678051458c54daef6796d80, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -13.53786
-      objectReference: {fileID: 0}
-    - target: {fileID: 6756069151628747682, guid: e92357a83678051458c54daef6796d80, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 62.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6756069151628747682, guid: e92357a83678051458c54daef6796d80, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 229.44083
-      objectReference: {fileID: 0}
-    - target: {fileID: 6756069151628747682, guid: e92357a83678051458c54daef6796d80, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6756069151628747682, guid: e92357a83678051458c54daef6796d80, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6756069151628747682, guid: e92357a83678051458c54daef6796d80, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6756069151628747682, guid: e92357a83678051458c54daef6796d80, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6756069151628747682, guid: e92357a83678051458c54daef6796d80, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6756069151628747682, guid: e92357a83678051458c54daef6796d80, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6756069151628747682, guid: e92357a83678051458c54daef6796d80, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8758154233791923361, guid: e92357a83678051458c54daef6796d80, type: 3}
-      propertyPath: m_Name
-      value: Plane
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: e92357a83678051458c54daef6796d80, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1079,4 +992,3 @@ SceneRoots:
   - {fileID: 1545301933}
   - {fileID: 1817995343}
   - {fileID: 2128113817}
-  - {fileID: 1713175579220935807}

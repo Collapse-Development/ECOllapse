@@ -14,22 +14,29 @@ namespace _Project.Code.Core.Generation.Map
         public float tileSize = 1f;
         public float heightMultiplier = 10f;
         public Material chunkMaterial;
-        public Gradient colorGradient;
 
-        [Header("Biome Prefabs")]
-        [SerializeField] private List<BiomePrefab> biomePrefabsList = new();
-        [System.Serializable] public class BiomePrefab { public BiomeType biomeType; public GameObject prefab; }
+        [Header("Biome Colors")]
+        [SerializeField] private BiomeColor[] biomeColors;
+
+        [System.Serializable]
+        public struct BiomeColor
+        {
+            public BiomeType type;    
+            public Color color;
+        }
 
         [Header("Debug")]
         public bool autoGenerate = true;
 
         private int chunkSize;
 
-        private Dictionary<BiomeType, GameObject> biomePrefabs = new Dictionary<BiomeType, GameObject>();
+        private Dictionary<BiomeType, Color> biomeColorMap;
 
         private void Awake()
         {
-            foreach (var p in biomePrefabsList) if (p?.prefab) biomePrefabs[p.biomeType] = p.prefab;
+            biomeColorMap = new Dictionary<BiomeType, Color>();
+            foreach (var bc in biomeColors)
+                biomeColorMap[bc.type] = bc.color;
         }
 
         private IEnumerator Start()
@@ -64,7 +71,7 @@ namespace _Project.Code.Core.Generation.Map
 
             GenerateWorldMeshesInternal();
         }
-
+        private Color GetBiomeColor(BiomeType type) => biomeColorMap.TryGetValue(type, out var c) ? c : Color.black;
         private void GenerateWorldMeshesInternal()
         {
             var chunks = worldGenerator.Chunks;
@@ -76,7 +83,6 @@ namespace _Project.Code.Core.Generation.Map
             foreach (var kvp in chunks)
             {
                 Vector2Int index = kvp.Key;
-                Chunk chunk = kvp.Value;
 
                 GameObject chunkObject = new GameObject($"Chunk_{index.x}_{index.y}");
                 chunkObject.transform.parent = transform;
@@ -89,122 +95,111 @@ namespace _Project.Code.Core.Generation.Map
                 Mesh mesh = new Mesh();
                 mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
 
-                int width = chunkSize + 1;
-                int height = chunkSize + 1;
+                int quads = chunkSize * chunkSize;
 
-                Vector3[] vertices = new Vector3[width * height];
-                Vector2[] uvs = new Vector2[vertices.Length];
-                Color[] colors = new Color[vertices.Length];
-                List<int> triangles = new List<int>();
+                Vector3[] vertices = new Vector3[quads * 4];
+                Vector2[] uvs = new Vector2[quads * 4];
+                Color[] colors = new Color[quads * 4];
+                int[] triangles = new int[quads * 6];
 
-                int v = 0;
-                for (int y = 0; y < height; y++)
-                {
-                    for (int x = 0; x < width; x++)
-                    {
-                        int globalX = Mathf.Min(index.x * chunkSize + x, tiles.GetLength(0) - 1);
-                        int globalY = Mathf.Min(index.y * chunkSize + y, tiles.GetLength(1) - 1);
-
-                        var t = tiles[globalX, globalY];
-                        float worldY = t.HeightValue * heightMultiplier;
-
-                        vertices[v] = new Vector3(x * tileSize, worldY, y * tileSize);
-                        uvs[v] = new Vector2((float)x / chunkSize, (float)y / chunkSize);
-                        colors[v] = colorGradient.Evaluate(t.HeightValue);
-                        v++;
-                    }
-                }
+                int vi = 0;
+                int ti = 0;
 
                 for (int y = 0; y < chunkSize; y++)
                 {
                     for (int x = 0; x < chunkSize; x++)
                     {
-                        int topLeft = y * width + x;
-                        int topRight = topLeft + 1;
-                        int bottomLeft = (y + 1) * width + x;
-                        int bottomRight = bottomLeft + 1;
+                        int gx = index.x * chunkSize + x;
+                        int gy = index.y * chunkSize + y;
 
-                        triangles.Add(topLeft);
-                        triangles.Add(bottomLeft);
-                        triangles.Add(topRight);
+                        // clamp по миру
+                        int gx0 = Mathf.Clamp(gx, 0, tiles.GetLength(0) - 1);
+                        int gy0 = Mathf.Clamp(gy, 0, tiles.GetLength(1) - 1);
+                        int gx1 = Mathf.Clamp(gx + 1, 0, tiles.GetLength(0) - 1);
+                        int gy1 = Mathf.Clamp(gy + 1, 0, tiles.GetLength(1) - 1);
 
-                        triangles.Add(topRight);
-                        triangles.Add(bottomLeft);
-                        triangles.Add(bottomRight);
+                        // Ѕиом берЄм из "левого-нижнего" тайла клетки (как обычно дл€ тайловой карты)
+                        var t = tiles[gx0, gy0];
+                        Color c = GetBiomeColor(t.BiomeType);
+
+                        // ¬ысоты по углам квадрата (чтобы рельеф был непрерывным)
+                        float h00 = tiles[gx0, gy0].HeightValue * heightMultiplier;
+                        float h10 = tiles[gx1, gy0].HeightValue * heightMultiplier;
+                        float h01 = tiles[gx0, gy1].HeightValue * heightMultiplier;
+                        float h11 = tiles[gx1, gy1].HeightValue * heightMultiplier;
+
+                        // 4 вершины (уникальные дл€ Ё“ќ√ќ тайла)
+                        vertices[vi + 0] = new Vector3((x + 0) * tileSize, h00, (y + 0) * tileSize);
+                        vertices[vi + 1] = new Vector3((x + 1) * tileSize, h10, (y + 0) * tileSize);
+                        vertices[vi + 2] = new Vector3((x + 0) * tileSize, h01, (y + 1) * tileSize);
+                        vertices[vi + 3] = new Vector3((x + 1) * tileSize, h11, (y + 1) * tileSize);
+
+                        // ќдинаковый цвет на весь тайл => без Уразмыти€Ф
+                        colors[vi + 0] = c;
+                        colors[vi + 1] = c;
+                        colors[vi + 2] = c;
+                        colors[vi + 3] = c;
+
+                        // UV (если не нужны Ч можно убрать вообще)
+                        uvs[vi + 0] = new Vector2(0, 0);
+                        uvs[vi + 1] = new Vector2(1, 0);
+                        uvs[vi + 2] = new Vector2(0, 1);
+                        uvs[vi + 3] = new Vector2(1, 1);
+
+                        // 2 треугольника
+                        triangles[ti + 0] = vi + 0;
+                        triangles[ti + 1] = vi + 2;
+                        triangles[ti + 2] = vi + 1;
+
+                        triangles[ti + 3] = vi + 1;
+                        triangles[ti + 4] = vi + 2;
+                        triangles[ti + 5] = vi + 3;
+
+                        vi += 4;
+                        ti += 6;
                     }
                 }
 
                 mesh.vertices = vertices;
-                mesh.triangles = triangles.ToArray();
+                mesh.triangles = triangles;
                 mesh.uv = uvs;
-                mesh.colors = colors;
-
+                mesh.colors = colors; // vertex colors задаютс€ этим массивом [web:55]
                 mesh.RecalculateNormals();
-                SmoothSharedBorderNormals(mesh, width, height);
-
                 mesh.RecalculateBounds();
-                mf.sharedMesh = mesh;
+                SmoothNormalsByPosition(mesh);
 
-                SpawnBiomeTilesForChunk(chunkObject, index, tiles);
+                mf.sharedMesh = mesh;
             }
 
             Debug.Log("[WorldMesh] Generation complete!");
         }
 
-        private void SmoothSharedBorderNormals(Mesh mesh, int width, int height)
+
+        private void SmoothNormalsByPosition(Mesh mesh)
         {
-            Vector3[] normals = mesh.normals;
-            Vector3[] vertices = mesh.vertices;
+            var verts = mesh.vertices;
+            var norms = mesh.normals;
 
-            for (int y = 0; y < height; y++)
+            var groups = new Dictionary<Vector3, Vector3>(verts.Length);
+
+            // 1) суммируем нормали по каждой позиции
+            for (int i = 0; i < verts.Length; i++)
             {
-                for (int x = 0; x < width; x++)
-                {
-                    int i = y * width + x;
-
-                    Vector3 avgNormal = normals[i];
-                    int count = 1;
-
-                    if (x > 0) { avgNormal += normals[i - 1]; count++; }
-                    if (x < width - 1) { avgNormal += normals[i + 1]; count++; }
-                    if (y > 0) { avgNormal += normals[i - width]; count++; }
-                    if (y < height - 1) { avgNormal += normals[i + width]; count++; }
-
-                    normals[i] = (avgNormal / count).normalized;
-                }
+                Vector3 p = verts[i];
+                if (groups.TryGetValue(p, out var sum))
+                    groups[p] = sum + norms[i];
+                else
+                    groups[p] = norms[i];
             }
 
-            mesh.normals = normals;
-        }
-        private void SpawnBiomeTilesForChunk(GameObject chunkObject, Vector2Int chunkIndex, Tile[,] tiles)
-        {
-            var biomeRoot = new GameObject("BiomeTiles");
-            biomeRoot.transform.SetParent(chunkObject.transform, false);
-
-            for (int y = 0; y < chunkSize; y++)
+            // 2) нормализуем сумму и присваиваем обратно всем вершинам в этой позиции
+            for (int i = 0; i < verts.Length; i++)
             {
-                for (int x = 0; x < chunkSize; x++)
-                {
-                    int globalX = Mathf.Min(chunkIndex.x * chunkSize + x, tiles.GetLength(0) - 1);
-                    int globalY = Mathf.Min(chunkIndex.y * chunkSize + y, tiles.GetLength(1) - 1);
-
-                    var tile = tiles[globalX, globalY];
-
-                    // воду пропускаем
-                    if (tile.HeightType < HeightType.Sand) continue;
-
-                    if (!biomePrefabs.TryGetValue(tile.BiomeType, out var prefab) || prefab == null)
-                        continue;
-
-                    float worldY = tile.HeightValue * heightMultiplier;
-
-                    Vector3 worldPos =
-                        chunkObject.transform.position +
-                        new Vector3((x + 0.5f) * tileSize, worldY + 0.05f, (y + 0.5f) * tileSize);
-
-                    Instantiate(prefab, worldPos, Quaternion.identity, biomeRoot.transform);
-                }
+                Vector3 p = verts[i];
+                norms[i] = groups[p].normalized;
             }
+
+            mesh.normals = norms;
         }
 
     }
