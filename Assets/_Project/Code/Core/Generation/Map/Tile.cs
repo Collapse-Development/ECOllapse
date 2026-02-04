@@ -48,7 +48,8 @@ public enum BiomeType
     Ice,
     River,
     Ocean,
-    ShallowWater
+    ShallowWater,
+    Lake
 }
 
 public class Tile

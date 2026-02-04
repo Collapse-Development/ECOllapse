@@ -137,9 +137,6 @@ namespace _Project.Code.Core.Generation.Map
                                 c = GetBiomeColor(BiomeType.ShallowWater);
                                 break;
 
-
-
-
                             // суша — красим биомом
                             case HeightType.Shore:
                             case HeightType.Sand:
@@ -152,6 +149,10 @@ namespace _Project.Code.Core.Generation.Map
                                 break;
                         }
 
+                        if (t.BiomeType == BiomeType.Lake && t.HeightType!=HeightType.River)
+                        {
+                            c = GetBiomeColor(BiomeType.Lake);
+                        }
 
 
                         // Высоты по углам квадрата (чтобы рельеф был непрерывным)
