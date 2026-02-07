@@ -46,6 +46,10 @@ public enum BiomeType
     BorealForest,
     Tundra,
     Ice,
+    River,
+    Ocean,
+    ShallowWater,
+    Lake
 }
 
 public class Tile

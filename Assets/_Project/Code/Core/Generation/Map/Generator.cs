@@ -245,6 +245,7 @@ namespace _Project.Code.Core.Generation.Map
 
             UpdateBitmasks();
             FloodFill();
+            AssignWaterBiomes();
 
             GenerateBiomeMap();
             UpdateBiomeBitmask();
@@ -424,6 +425,38 @@ namespace _Project.Code.Core.Generation.Map
                 }
             }
         }
+
+        private void AssignWaterBiomes()
+        {
+            foreach (var group in _waters)
+            {
+                bool touchesBorder = false;
+
+                foreach (var t in group.Tiles)
+                {
+                    if (t.X == 0 || t.Y == 0 ||
+                        t.X == width - 1 || t.Y == height - 1)
+                    {
+                        touchesBorder = true;
+                        break;
+                    }
+                }
+
+                int area = group.Tiles.Count;
+
+                BiomeType waterBiome;
+
+                if (touchesBorder || area > 1500)
+                    waterBiome = BiomeType.Ocean;
+                else waterBiome = BiomeType.Lake;
+
+                foreach (var t in group.Tiles)
+                {
+                    t.BiomeType = waterBiome;
+                }
+            }
+        }
+
 
         private void DigRiverGroups()
         {

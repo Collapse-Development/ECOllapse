@@ -120,7 +120,40 @@ namespace _Project.Code.Core.Generation.Map
 
                         // Биом берём из "левого-нижнего" тайла клетки (как обычно для тайловой карты)
                         var t = tiles[gx0, gy0];
-                        Color c = GetBiomeColor(t.BiomeType);
+
+                        Color c;
+
+                        switch (t.HeightType)
+                        {
+                            case HeightType.River:
+                                c = GetBiomeColor(BiomeType.River);
+                                break;
+
+                            case HeightType.DeepWater:
+                                c = GetBiomeColor(BiomeType.Ocean);
+                                break;
+
+                            case HeightType.ShallowWater:
+                                c = GetBiomeColor(BiomeType.ShallowWater);
+                                break;
+
+                            // суша — красим биомом
+                            case HeightType.Shore:
+                            case HeightType.Sand:
+                            case HeightType.Grass:
+                            case HeightType.Forest:
+                            case HeightType.Rock:
+                            case HeightType.Snow:
+                            default:
+                                c = GetBiomeColor(t.BiomeType);
+                                break;
+                        }
+
+                        if (t.BiomeType == BiomeType.Lake && t.HeightType!=HeightType.River)
+                        {
+                            c = GetBiomeColor(BiomeType.Lake);
+                        }
+
 
                         // Высоты по углам квадрата (чтобы рельеф был непрерывным)
                         float h00 = tiles[gx0, gy0].HeightValue * heightMultiplier;
@@ -201,6 +234,7 @@ namespace _Project.Code.Core.Generation.Map
 
             mesh.normals = norms;
         }
+
 
     }
 }
