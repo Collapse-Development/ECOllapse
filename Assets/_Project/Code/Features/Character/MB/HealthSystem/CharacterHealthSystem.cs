@@ -8,7 +8,7 @@ namespace CharacterSystems
     {
         [SerializeField] private float _maxHealth = 100f;
         [SerializeField] private Character _character;
-        private float _currentHealth;
+        [SerializeField] private float _currentHealth;
 
         public float CurrentHealth
         {
@@ -26,7 +26,10 @@ namespace CharacterSystems
             }
         }
 
-        public float MaxHealth => _maxHealth;
+        public float MaxHealth
+        {
+            get => _maxHealth;
+        }    
 
         public event Action<float, float> OnHealthChanged;
         public event Action OnDeath;
@@ -67,6 +70,17 @@ namespace CharacterSystems
             }
 
             CurrentHealth += value;
+        }
+
+        public void SetMaxHealth(float value)
+        {
+            if (value <= 0)
+            {
+                return;
+            }
+
+            _maxHealth = value;
+            CurrentHealth = _currentHealth;
         }
     }
 }
