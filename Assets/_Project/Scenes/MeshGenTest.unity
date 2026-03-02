@@ -924,6 +924,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2128113817}
   - component: {fileID: 2128113818}
+  - component: {fileID: 2128113819}
   m_Layer: 0
   m_Name: meshGen
   m_TagString: Untagged
@@ -959,6 +960,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MeshGenerator
   worldGenerator: {fileID: 1817995342}
+  objectGenerator: {fileID: 2128113819}
   tileSize: 1
   heightMultiplier: 10
   chunkMaterial: {fileID: -876546973899608171, guid: fdd12af54f3686c4ead18527951a8a29, type: 3}
@@ -989,13 +991,20 @@ MonoBehaviour:
     color: {r: 0.0763617, g: 0.154324, b: 0.41509432, a: 1}
   - type: 12
     color: {r: 0.16820934, g: 0.33966473, b: 0.7924528, a: 1}
-  generateEnvironment: 1
-  envObjectPrefab: {fileID: 7494149061247130240, guid: c21213a82babd694990d71a3b87c4f19, type: 3}
-  envDensity: 0.2
-  envScaleMin: 0.2
-  envScaleMax: 0.8
-  envColors: []
   autoGenerate: 1
+--- !u!114 &2128113819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2128113815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eb4ac37130730e479a3b8ac28eb3b02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Code.Core.Generation.Objects.ObjectGenerator
+  defaultProfile: {fileID: 11400000, guid: 864d37ebf97a6ce46bb4f37b97272e51, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

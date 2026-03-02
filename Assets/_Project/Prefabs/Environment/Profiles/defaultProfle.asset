@@ -18,3 +18,4 @@ MonoBehaviour:
   minScale: 0.2
   maxScale: 0.8
   maxSlope: 30
+  alignToSlope: 1
