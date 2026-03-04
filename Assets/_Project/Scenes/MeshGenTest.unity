@@ -1004,7 +1004,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6eb4ac37130730e479a3b8ac28eb3b02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Code.Core.Generation.Objects.ObjectGenerator
-  defaultProfile: {fileID: 11400000, guid: 864d37ebf97a6ce46bb4f37b97272e51, type: 2}
+  rules: []
+  loadFromResources: 1
+  resourcesFolder: Environment/Rules
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

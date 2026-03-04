@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9589ada0475dd8f448772eb0ff84a45e, type: 3}
-  m_Name: defaultProfle
-  m_EditorClassIdentifier: Assembly-CSharp::_Project.Code.Core.Generation.Objects.EnvironmentProfile
-  prefabs: []
-  colors: []
-  density: 0.2
+  m_Script: {fileID: 11500000, guid: b404f01113323b34bab64b27bcc62681, type: 3}
+  m_Name: bushRule
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Code.Core.Generation.Objects.EnvironmentRule
+  prefab: {fileID: 0}
+  color: {r: 1, g: 1, b: 1, a: 1}
+  density: 0.1
   minScale: 0.2
   maxScale: 0.8
   maxSlope: 30
