@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/GameUI.unity
     guid: 23f1334937b31584f9af1ef4e73f177a
+  - enabled: 1
+    path: Assets/_Project/Scenes/CameraTest.unity
+    guid: 984dcf9f5ae43a1449283e30b0cad6f4
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
