@@ -11,7 +11,7 @@ public class Setup : MonoBehaviour
         {
             Vector3 spawnPos = new Vector3(x, 0, z);
             BlockSpawner.Instance.SpawnBlock(spawnPos, blockType);
-
+            Debug.Log($"Spawned {blockType} at {spawnPos}");
             x += 2;
             if (x > 8)
             {
