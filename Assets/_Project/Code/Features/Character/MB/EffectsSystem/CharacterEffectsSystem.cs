@@ -31,7 +31,7 @@ namespace _Project.Code.Features.Character.MB.EffectsSystem
         {
             if (_effects == null) return;
             
-            float dt = Time.deltaTime;
+            float dt = UnityEngine.Time.deltaTime;
             
             foreach (var effect in _effects)
             {

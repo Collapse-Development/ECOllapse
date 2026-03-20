@@ -1,4 +1,5 @@
 using System.Collections;
+using _Project.Code;
 using _Project.Code.Features.Player.MB;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,13 +19,14 @@ public class PlayerFeaturesTestSceneLoader : MonoBehaviour
         var playerCharacter = CharacterBuilder.Build(_playerConfig.GetBuildConfig());
         _player.Character = playerCharacter;
 
-        var gameSceneContext = new GameSceneContext
-        {
-            Player = _player
-        };
+        var gameSceneContext = GameSceneContext.Instance;
+        gameSceneContext.Player = _player;
 
         var gameUI = FindAnyObjectByType<GameUI>();
-        gameUI.Initialize(gameSceneContext);
+        if (gameUI != null)
+        {
+            gameUI.Initialize(gameSceneContext);
+        }
 
         yield return null;
     }
