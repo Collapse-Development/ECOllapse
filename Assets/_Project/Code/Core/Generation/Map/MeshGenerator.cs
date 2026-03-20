@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using _Project.Code.Core.Generation.Objects;
 using Code.Core.Chunks;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ namespace _Project.Code.Core.Generation.Map
     {
         [Header("References")]
         public Generator worldGenerator;
+        public ObjectGenerator objectGenerator; // новый компонент
 
         [Header("Mesh Settings")]
         public float tileSize = 1f;
@@ -202,11 +204,16 @@ namespace _Project.Code.Core.Generation.Map
                 SmoothNormalsByPosition(mesh);
 
                 mf.sharedMesh = mesh;
+
+                // Вызываем спавнер, если он есть
+                if (objectGenerator != null)
+                {
+                    objectGenerator.SpawnForChunk(chunkObject, index, tiles, chunkSize, tileSize, heightMultiplier, GetBiomeColor);
+                }
             }
 
             Debug.Log("[WorldMesh] Generation complete!");
         }
-
 
         private void SmoothNormalsByPosition(Mesh mesh)
         {
@@ -234,7 +241,5 @@ namespace _Project.Code.Core.Generation.Map
 
             mesh.normals = norms;
         }
-
-
     }
 }
