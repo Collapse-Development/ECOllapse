@@ -1,7 +1,9 @@
 using UnityEngine;
+using _Project.Code.Features.Character.MB;
 using _Project.Code.Features.Character.MB.EffectsSystem;
+using _Project.Code.Features.Character.MB.EffectsSystem.Effects.Poison;
 
-namespace _Project.Code.Features.Character.MB.EffectsSystem.Examples
+namespace _Project.Code.Shared.Examples
 {
     /// <summary>
     /// Example script showing how to use the poison system
@@ -18,7 +20,6 @@ namespace _Project.Code.Features.Character.MB.EffectsSystem.Examples
 
         private void Start()
         {
-            // Find character if not assigned
             if (targetCharacter == null)
             {
                 targetCharacter = FindFirstObjectByType<Character>();

@@ -1,6 +1,6 @@
 using CharacterSystems;
 
-namespace _Project.Code.Features.Character.MB.EffectsSystem.Effects
+namespace _Project.Code.Features.Character.MB.EffectsSystem.Effects.Poison
 {
     public class PoisonEffect : CharacterBaseEffect
     {
@@ -27,13 +27,13 @@ namespace _Project.Code.Features.Character.MB.EffectsSystem.Effects
         public override void Tick(float dt)
         {
             _damageValue.Tick(dt);
-            
+
             float damage = _damageValue.GetValue();
             if (damage > 0f && _healthSystem != null)
             {
                 _healthSystem.TakeDamage(damage);
             }
-            
+
             base.Tick(dt);
         }
     }

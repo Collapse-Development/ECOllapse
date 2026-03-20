@@ -1,8 +1,7 @@
 using _Project.Code.Features.Character.MB.EffectsSystem.CancellationRules;
-using _Project.Code.Features.Character.MB.EffectsSystem.Effects;
 using _Project.Code.Features.Character.MB.EffectsSystem.EffectValues;
 
-namespace _Project.Code.Features.Character.MB.EffectsSystem
+namespace _Project.Code.Features.Character.MB.EffectsSystem.Effects.Poison
 {
     public static class PoisonUtility
     {
