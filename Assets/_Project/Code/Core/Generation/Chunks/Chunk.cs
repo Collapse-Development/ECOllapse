@@ -1,3 +1,5 @@
+using NUnit.Framework;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Code.Core.Chunks
@@ -8,10 +10,16 @@ namespace Code.Core.Chunks
         public ChunkState State { get; set; }
         public GameObject View { get; private set; }
 
+        public List<Tile> Tiles { get; private set; } = new List<Tile>();
+
         public Chunk(ChunkIndex index)
         {
             Index = index;
             State = ChunkState.Unloaded;
+        }
+        public void AddTile(Tile tile)
+        {
+            Tiles.Add(tile);
         }
 
         public void SetView(GameObject view)

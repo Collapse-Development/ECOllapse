@@ -9,7 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08b2c31d608d4df18894d411d299f1cb, type: 3}
-  m_Name: AllEffectsSystem
-  m_EditorClassIdentifier: Assembly-CSharp::_Project.Code.Features.Character.Configurations.Systems.CharacterEffectsSystemConfig
-  Effects: 00000000
+  m_Script: {fileID: 11500000, guid: 7c6a051c3f9c18447b773f96c5e12d35, type: 3}
+  m_Name: RedSandstone
+  m_EditorClassIdentifier: Assembly-CSharp::BlockConfig
+  id: 13
+  idUV: {x: 2, y: 3}

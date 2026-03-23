@@ -1,0 +1,10 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="MainMenu" style="flex-grow: 1; width: 200px; top: 0; left: 64px; bottom: 0; -unity-font-definition: url(&quot;project://database/Assets/Fonts/kaivs_minegram_v1.ttf?fileID=12800000&amp;guid=04a6083ea8eeaec409dac6815cdd1b3a&amp;type=3#kaivs_minegram_v1&quot;); font-size: 32px; -unity-text-align: upper-left; flex-wrap: nowrap; align-items: stretch; justify-content: center; align-content: center; display: flex;">
+        <ui:Button text="Играть" name="Play" />
+        <ui:Button text="Настройки" name="Settings" />
+        <ui:Button text="Выход" name="Exit" />
+    </ui:VisualElement>
+    <ui:VisualElement name="SettingsMenu" style="flex-grow: 1; width: auto; top: 0; left: 0; bottom: 0; -unity-font-definition: url(&quot;project://database/Assets/Fonts/kaivs_minegram_v1.ttf?fileID=12800000&amp;guid=04a6083ea8eeaec409dac6815cdd1b3a&amp;type=3#kaivs_minegram_v1&quot;); font-size: 32px; -unity-text-align: upper-left; flex-wrap: nowrap; align-items: auto; justify-content: flex-start; align-content: auto; display: none; right: 0; margin-top: 32px; margin-right: 32px; margin-bottom: 32px; margin-left: 32px;">
+        <ui:Button text="Назад" name="Back" style="align-self: flex-start;" />
+    </ui:VisualElement>
+</ui:UXML>

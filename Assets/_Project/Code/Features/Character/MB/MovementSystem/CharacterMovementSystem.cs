@@ -18,8 +18,10 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
         }
         
         [SerializeField, Min(0f)] private float _speed = 3.5f;
+        [SerializeField, Min(1f)] private float _runMultiplier = 1.5f;
         
         public bool IsMoving { get; private set; }
+        public bool IsRunning { get; private set; }
 
         private Character _character;
         private Vector3 _direction = Vector3.zero;
@@ -44,6 +46,7 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
             }
             
             _baseSpeed = movementCfg.Speed;
+            _runMultiplier = movementCfg.RunMultiplier;
             
             Debug.Log($"MovementSystem initialized with config: Speed={_speed}");
             return true;
@@ -58,7 +61,9 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
 
         private void Update()
         {
-            Speed = _baseSpeed * _frameSpeedMultiplier;
+            var runMultiplier = IsRunning ? _runMultiplier : 1;
+            
+            Speed = _baseSpeed * runMultiplier * _frameSpeedMultiplier;
             
             _frameSpeedMultiplier = 1;
         }
@@ -80,6 +85,11 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
         {
             _direction = direction.sqrMagnitude > 1e-6f ? direction.normalized : Vector3.zero;
             UpdateIsMovingFlag();
+        }
+
+        public void SetRunning(bool isRunning)
+        {
+            IsRunning = isRunning;
         }
 
         public void ApplyFrameSpeedMultiplier(float multiplier)
