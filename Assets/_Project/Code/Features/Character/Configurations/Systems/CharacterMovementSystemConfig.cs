@@ -5,4 +5,5 @@ using UnityEngine;
 public class CharacterMovementSystemConfig : CharacterSystemConfig<CharacterMovementSystem>
 {
     public float Speed = 5f;
+    [Min(1f)] public float RunMultiplier = 1.5f;
 }

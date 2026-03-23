@@ -7,7 +7,10 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
         Vector3 Direction { get; }
         float Speed { get; set; }
         bool IsMoving { get; }
+        bool IsRunning { get; }
+        
         void SetDirection(Vector3 direction);
+        void SetRunning(bool isRunning);
         void ApplyFrameSpeedMultiplier(float multiplier);
     }
 }
