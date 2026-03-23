@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using _Project.Code.Core.Generation.Map;
 
 public enum HeightType
 {
@@ -45,6 +46,10 @@ public enum BiomeType
     BorealForest,
     Tundra,
     Ice,
+    River,
+    Ocean,
+    ShallowWater,
+    Lake
 }
 
 public class Tile
