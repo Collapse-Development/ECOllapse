@@ -1,7 +1,8 @@
 using _Project.Code.Features.Character.Configurations.Systems;
-using UnityEngine;
-using _Project.Code.Features.Character.MB.Model;
 using _Project.Code.Features.Character.MB;
+using _Project.Code.Features.Character.MB.Model;
+using Unity.VisualScripting;
+using UnityEngine;
 
 namespace CharacterSystems
 {
@@ -40,6 +41,13 @@ namespace CharacterSystems
             }
 
             Model = Instantiate(prefab, _character.transform).GetComponent<CharacterModel>();
+                        
+            CapsuleCollider capsule = _character.AddComponent<CapsuleCollider>(); //Самое логиченое место, для того, чтобы навесить коллайдер...
+            capsule.height = 1.8f;
+            capsule.radius = 0.4f;
+            capsule.center = new Vector3(0, 0.85f, 0);
+            Rigidbody rb = _character.GetComponent<Rigidbody>();
+            rb.isKinematic = false;
 
             if (Model == null)
             {
