@@ -34,7 +34,6 @@ namespace _Project.Code.Features.Character.MB
         {
             var type = typeof(T);
 
-            // Запрещаем прямой запрос ICharacterSystem
             if (type == typeof(ICharacterSystem))
                 Debug.LogError("Нельзя запрашивать ICharacterSystem напрямую.");
 
@@ -42,8 +41,38 @@ namespace _Project.Code.Features.Character.MB
                 return (T)system;
 
             Debug.LogError($"Система типа {type.Name} не найдена.");
-
             return null;
+        }
+
+        // ========== СВОЙСТВА ДЛЯ СИСТЕМЫ БОДРОСТИ ==========
+        [Header("Потребности")]
+        [SerializeField] private bool _hasFood = true;
+        [SerializeField] private bool _hasWater = true;
+        [SerializeField] private float _bodyTemperature = 36.6f;
+        [SerializeField] private bool _isMoving = false;
+
+        public bool HasFood 
+        { 
+            get => _hasFood; 
+            set => _hasFood = value; 
+        }
+
+        public bool HasWater 
+        { 
+            get => _hasWater; 
+            set => _hasWater = value; 
+        }
+
+        public float BodyTemperature 
+        { 
+            get => _bodyTemperature; 
+            set => _bodyTemperature = Mathf.Clamp(value, 28f, 41f); 
+        }
+
+        public bool IsMoving 
+        { 
+            get => _isMoving; 
+            set => _isMoving = value; 
         }
     }
 }
