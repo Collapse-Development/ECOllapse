@@ -77,7 +77,7 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
             if (dir.sqrMagnitude <= 1e-6f) return;
             dir.Normalize();
 
-            var delta = dir * (_speed * Time.fixedDeltaTime);
+            var delta = dir * (_speed * UnityEngine.Time.fixedDeltaTime);
             _rb.MovePosition(_rb.position + delta);
         }
 
