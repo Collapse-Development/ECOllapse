@@ -32,16 +32,21 @@ namespace CharacterSystems
                 return;
             }
 
+            var resistanceSystem = _character.GetSystem<ICharacterDamageResistanceSystem>();
+            float effectiveDamage = resistanceSystem != null
+                ? resistanceSystem.CalculateEffectiveDamage(damage)
+                : damage;
+
             var healthSystem = _character.GetSystem<ICharacterHealthSystem>();
             if (healthSystem != null)
             {
-                healthSystem.TakeDamage(damage);
+                healthSystem.TakeDamage(effectiveDamage);
             }
             else
             {
                 Debug.LogWarning("HealthSystem не найдена, урон не применён");
             }
-            
+
             OnHit?.Invoke();
         }
     }
