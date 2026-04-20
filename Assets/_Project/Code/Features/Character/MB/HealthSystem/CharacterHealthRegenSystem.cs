@@ -2,7 +2,7 @@ using UnityEngine;
 using _Project.Code.Features.Character.MB;
 using _Project.Code.Features.Character.MB.NeedsSystem.Satiety;
 using _Project.Code.Features.Character.MB.Thirst;
-using _Project.Code.Features.Character.MB.NeedsSystem.Vigor;
+using _Project.Code.Features.Character.MB.Vigor;
 
 namespace CharacterSystems
 {
