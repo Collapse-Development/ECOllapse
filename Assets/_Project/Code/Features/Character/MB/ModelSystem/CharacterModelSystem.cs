@@ -15,7 +15,7 @@ namespace CharacterSystems
         public bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
             if (cfg is not CharacterModelSystemConfig modelCfg) return false;
-            
+
             _character = character;
             if (!_character.TryRegisterSystem<ICharacterModelSystem>(this)) return false;
             
