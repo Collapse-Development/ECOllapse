@@ -14,7 +14,9 @@ namespace _Project.Code.Features.Player.MB
             {
                 var oldCharacter = _character;
                 _character = value;
-                
+
+                _character.transform.position = this.transform.position; //Раньше Character спавнился всегда в нулевой точке (в точке скрипта Character), сейчас он спавнитсья в позиции Player.
+
                 OnCharacterUpdated?.Invoke(oldCharacter, _character);
             }
         }
