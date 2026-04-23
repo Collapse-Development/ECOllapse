@@ -1,5 +1,7 @@
+using _Project.Code.Features.Character.MB.EffectsSystem.Effects.Thirst;
 using _Project.Code.Features.Character.MB.MovementSystem;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 namespace _Project.Code.Features.Character.MB.Thirst
 {
@@ -9,6 +11,10 @@ namespace _Project.Code.Features.Character.MB.Thirst
         [SerializeField] private float _maxValue = 100f;
         [SerializeField] private float _decreasePerSecond = 1f;
         [SerializeField] private float _runningDecreaseMultiplier = 2f;
+
+        private Character _targetCharacter;
+        
+        private bool _thirstEffectApplied;
 
         private ICharacterMovementSystem _movementSystem;
 
@@ -37,6 +43,7 @@ namespace _Project.Code.Features.Character.MB.Thirst
 
             if (!character.TryRegisterSystem<ICharacterThirstSystem>(this)) return false;
 
+            _targetCharacter = character;
             _movementSystem = character.GetSystem<ICharacterMovementSystem>();
 
             _maxValue = Mathf.Max(0f, thirstCfg.MaxValue);
@@ -46,7 +53,7 @@ namespace _Project.Code.Features.Character.MB.Thirst
                 ? _maxValue
                 : Mathf.Clamp(thirstCfg.CurrentValue, 0f, _maxValue);
 
-            Debug.Log($"ThirstSystem initialized: CurrentValue={_currentValue}, MaxValue={_maxValue}, DecreasePerSecond={_decreasePerSecond}, RunningDecreaseMultiplier={_runningDecreaseMultiplier}");
+            Debug.Log($"ThirstSystem initialized: CurrentValue={_currentValue}, MaxValue={_maxValue}, DecreasePerSecond={_decreasePerSecond}, RunningDecreaseMultiplier={_runningDecreaseMultiplier}, targetCharacter={_targetCharacter}");
             return true;
         }
 
@@ -59,6 +66,31 @@ namespace _Project.Code.Features.Character.MB.Thirst
                 : 1f;
 
             ReduceValue(_decreasePerSecond * multiplier * Time.deltaTime);
+        }
+
+        private void OnEnable()
+        {
+            OnCurrentValueChanged += HandleThirstChanged;
+        }
+
+        private void OnDisable()
+        {
+            OnCurrentValueChanged -= HandleThirstChanged;
+        }
+
+        private void HandleThirstChanged(float currentValue, float maxValue)
+        {
+            if (_targetCharacter == null) return;
+
+            if (currentValue <= 0f && !_thirstEffectApplied)
+            {
+                ThirstUtility.ApplyThirstEffect(_targetCharacter, 1f, 1f);
+                _thirstEffectApplied = true;
+            }
+            if (currentValue > 0f)
+            {
+                _thirstEffectApplied = false;
+            }
         }
 
         public void AddValue(float value)
