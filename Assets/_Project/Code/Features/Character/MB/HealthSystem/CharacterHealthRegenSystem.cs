@@ -1,8 +1,8 @@
 using UnityEngine;
 using _Project.Code.Features.Character.MB;
 using _Project.Code.Features.Character.MB.NeedsSystem.Satiety;
-using _Project.Code.Features.Character.MB.NeedsSystem.Hydration;
-using _Project.Code.Features.Character.MB.NeedsSystem.Vigor;
+using _Project.Code.Features.Character.MB.Thirst;
+using _Project.Code.Features.Character.MB.Vigor;
 
 namespace CharacterSystems
 {
@@ -15,7 +15,7 @@ namespace CharacterSystems
 
         private ICharacterHealthSystem _healthSystem;
         private ICharacterSatietySystem _satietySystem;
-        private ICharacterHydrationSystem _hydrationSystem;
+        private ICharacterThirstSystem _hydrationSystem;
         private ICharacterVigorSystem _vigorSystem;
 
         private float _maxRegen;
@@ -32,7 +32,7 @@ namespace CharacterSystems
 
             _healthSystem = character.GetSystem<ICharacterHealthSystem>();
             _satietySystem = character.GetSystem<ICharacterSatietySystem>();
-            _hydrationSystem = character.GetSystem<ICharacterHydrationSystem>();
+            _hydrationSystem = character.GetSystem<ICharacterThirstSystem>();
             _vigorSystem = character.GetSystem<ICharacterVigorSystem>();
 
             _maxRegen = regenCfg.MaxRegenPerSecond;
