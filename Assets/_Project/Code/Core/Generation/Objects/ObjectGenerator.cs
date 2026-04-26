@@ -129,6 +129,13 @@ namespace _Project.Code.Core.Generation.Objects
                         if (rule.prefab != null)
                         {
                             obj = Instantiate(rule.prefab, chunkObject.transform);
+                            
+                            // Проверяем, висит ли на префабе скрипт WorldObject (или Item)
+                            if (obj.TryGetComponent<_Project.Code.Features.World.WorldObject>(out var worldObj))
+                            {
+                                // Передаем ему индекс чанка и локальную позицию
+                                worldObj.Initialize(new global::Code.Core.Chunks.ChunkIndex(chunkIndex.x, chunkIndex.y), new global::Code.Core.Chunks.LocalPos(localPos.x, localPos.z));
+                            }
                         }
                         else
                         {
