@@ -11,8 +11,13 @@ namespace _Project.Code.Features.Character.MB.EnduranceSystem
         [SerializeField] private float _restorePerSecond = 15f;
         [SerializeField] private float _restoreDelay = 1f;
 
+        
+        [SerializeField] private float _exhaustionDuration = 10f;
+        [SerializeField] private float _exhaustionRestorePerSecond = 5f;
+
         private ICharacterMovementSystem _movementSystem;
         private float _restoreDelayTimer;
+        private float _exhaustionTimer;
 
         public float CurrentValue
         {
@@ -24,10 +29,16 @@ namespace _Project.Code.Features.Character.MB.EnduranceSystem
 
                 _currentValue = clampedValue;
                 OnCurrentValueChanged?.Invoke(_currentValue, _maxValue);
+                // Если стамина упала до 0 (или ниже), запускаем истощение
+                if (_currentValue <= 0f && _exhaustionTimer <= 0f)
+                {
+                    TriggerExhaustion();
+                }
             }
         }
 
         public float MaxValue => _maxValue;
+        public bool IsExhausted => _exhaustionTimer > 0f;
 
         public event System.Action<float, float> OnCurrentValueChanged;
         public event System.Action<float> OnMaxValueChanged;
@@ -44,6 +55,10 @@ namespace _Project.Code.Features.Character.MB.EnduranceSystem
             _decreasePerSecond = Mathf.Max(0f, enduranceCfg.DecreasePerSecond);
             _restorePerSecond = Mathf.Max(0f, enduranceCfg.RestorePerSecond);
             _restoreDelay = Mathf.Max(0f, enduranceCfg.RestoreDelay);
+
+            _exhaustionDuration = Mathf.Max(0f, enduranceCfg.ExhaustionDuration);
+            _exhaustionRestorePerSecond = Mathf.Max(0f, enduranceCfg.ExhaustionRestorePerSecond);
+
             CurrentValue = enduranceCfg.StartFromMaxValue
                 ? _maxValue
                 : Mathf.Clamp(enduranceCfg.CurrentValue, 0f, _maxValue);
@@ -51,9 +66,21 @@ namespace _Project.Code.Features.Character.MB.EnduranceSystem
             Debug.Log($"EnduranceSystem initialized: CurrentValue={_currentValue}, MaxValue={_maxValue}, DecreasePerSecond={_decreasePerSecond}, RestorePerSecond={_restorePerSecond}, RestoreDelay={_restoreDelay}");
             return true;
         }
-
+        private void TriggerExhaustion()
+        {
+            _exhaustionTimer = _exhaustionDuration;
+            
+            _movementSystem?.SetRunning(false);
+            
+            Debug.Log("Персонаж истощен! Восстановление выносливости снижено на 10 секунд.");
+        }
         private void Update()
         {
+            // Обновляем таймер истощения
+            if (_exhaustionTimer > 0f)
+            {
+                _exhaustionTimer -= Time.deltaTime;
+            }
             if (_movementSystem != null && _movementSystem.IsRunning)
             {
                 _restoreDelayTimer = _restoreDelay;
@@ -66,8 +93,8 @@ namespace _Project.Code.Features.Character.MB.EnduranceSystem
                 _restoreDelayTimer -= Time.deltaTime;
                 return;
             }
-
-            AddValue(_restorePerSecond * Time.deltaTime);
+            float currentRegenRate = IsExhausted ? _exhaustionRestorePerSecond : _restorePerSecond;
+            AddValue(currentRegenRate * Time.deltaTime);
         }
 
         public void AddValue(float value)

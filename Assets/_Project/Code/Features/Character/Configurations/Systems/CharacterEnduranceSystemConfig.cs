@@ -17,4 +17,11 @@ public class CharacterEnduranceSystemConfig : CharacterSystemConfig<CharacterEnd
 
     [Tooltip("Delay in seconds before restoration starts after running ends.")]
     public float RestoreDelay = 1f;
+
+    [Header("Штраф за истощение")]
+    [Tooltip("Продолжительность штрафа при падении выносливости до 0")]
+    public float ExhaustionDuration = 10f;
+    
+    [Tooltip("Сколько CurrentValue восстанавливается в секунду во время истощения")]
+    public float ExhaustionRestorePerSecond = 5f;
 }
