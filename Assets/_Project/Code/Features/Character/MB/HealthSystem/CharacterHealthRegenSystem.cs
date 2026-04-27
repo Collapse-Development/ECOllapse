@@ -6,7 +6,7 @@ using _Project.Code.Features.Character.MB.Vigor;
 
 namespace CharacterSystems
 {
-    public class CharacterHealthRegenSystem : MonoBehaviour, ICharacterHealthRegenSystem
+    public class CharacterHealthRegenSystem : BaseCharacterSystem, ICharacterHealthRegenSystem
     {
         // Пороги, ниже которых регенерация не работает
         private const float SatietyThreshold = 70f;
@@ -24,8 +24,10 @@ namespace CharacterSystems
         public float CurrentRegenRate { get; private set; }
         public bool IsRegenerating { get; private set; }
 
-        public bool TryInitialize(Character character, CharacterSystemConfig cfg)
+        public override bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
+            if (!base.TryInitialize(character, cfg)) return false;
+
             if (cfg is not CharacterHealthRegenSystemConfig regenCfg) return false;
 
             if (!character.TryRegisterSystem<ICharacterHealthRegenSystem>(this)) return false;
@@ -38,12 +40,19 @@ namespace CharacterSystems
             _maxRegen = regenCfg.MaxRegenPerSecond;
             _minRegen = _maxRegen / 2f;
 
-            Debug.Log($"HealthRegenSystem initialized: MaxRegen={_maxRegen} HP/s");
+            Debug.Log($"HealthRegenSystem initialized: MaxRegen={_maxRegen} HP/s. IsActive={IsActive}");
             return true;
         }
 
         private void Update()
         {
+            if (!IsActive) 
+            {
+                IsRegenerating = false;
+                CurrentRegenRate = 0f;
+                return;
+            }
+            
             if (_healthSystem == null) return;
 
             float satiety = _satietySystem?.Satiety ?? 0f;

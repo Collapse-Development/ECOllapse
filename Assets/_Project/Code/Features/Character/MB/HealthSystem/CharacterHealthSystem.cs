@@ -4,7 +4,7 @@ using _Project.Code.Features.Character.MB;
 
 namespace CharacterSystems
 {
-    public class CharacterHealthSystem : MonoBehaviour, ICharacterHealthSystem
+    public class CharacterHealthSystem : BaseCharacterSystem, ICharacterHealthSystem
     {
         [SerializeField] private float _maxHealth = 100f;
         [SerializeField] private Character _character;
@@ -34,8 +34,10 @@ namespace CharacterSystems
         public event Action<float, float> OnHealthChanged;
         public event Action OnDeath;
         
-        public bool TryInitialize(Character character, CharacterSystemConfig cfg)
+        public override bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
+            if (!base.TryInitialize(character, cfg)) return false;
+
             if (cfg is not CharacterHealthSystemConfig healthCfg) return false;
             
             _character = character;
@@ -43,7 +45,7 @@ namespace CharacterSystems
             
             _maxHealth = healthCfg.MaxHealth;
             
-            Debug.Log($"HealthSystem initialized with config: MaxHealth={_maxHealth}");
+            Debug.Log($"HealthSystem initialized with config: MaxHealth={_maxHealth}. IsActive={IsActive}");
             return true;
         }
 
@@ -54,6 +56,8 @@ namespace CharacterSystems
 
         public void TakeDamage (float value)
         {
+            if (!IsActive) return;
+
             if (value <= 0)
             {
                 return;
@@ -64,6 +68,8 @@ namespace CharacterSystems
 
         public void AddHealth(float value)
         {
+            if (!IsActive) return;
+
             if (value <= 0)
             {
                 return;
@@ -74,6 +80,8 @@ namespace CharacterSystems
 
         public void SetMaxHealth(float value)
         {
+            if (!IsActive) return;
+            
             if (value <= 0)
             {
                 return;
