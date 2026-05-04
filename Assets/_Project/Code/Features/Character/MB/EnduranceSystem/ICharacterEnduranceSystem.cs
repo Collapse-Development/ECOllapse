@@ -7,6 +7,8 @@ namespace _Project.Code.Features.Character.MB.EnduranceSystem
         float CurrentValue { get; }
         float MaxValue { get; }
 
+        bool IsExhausted { get; }
+
         event Action<float, float> OnCurrentValueChanged;
         event Action<float> OnMaxValueChanged;
 
