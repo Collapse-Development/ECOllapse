@@ -31,17 +31,24 @@ namespace _Project.Code.Features.Character.MB.InventorySystem
 
         // itemId → количество единиц
         private readonly Dictionary<string, int> _items = new();
+        // упорядоченный список слотов (уникальные id предметов)
+        private readonly List<string> _slots = new();
         private float _currentWeight;
+        private int _activeSlotIndex;
 
         public float MaxWeight => _maxWeight;
         public float CurrentWeight => _currentWeight;
         public float WeightRatio => _maxWeight > 0f ? Mathf.Clamp01(_currentWeight / _maxWeight) : 0f;
         public float PickupRange => _pickupRange;
         public IReadOnlyDictionary<string, int> Items => _items;
+        public IReadOnlyList<string> Slots => _slots;
+        public int ActiveSlotIndex => _activeSlotIndex;
+        public string ActiveItemId => _slots.Count > 0 ? _slots[_activeSlotIndex] : null;
 
         public event Action<string, int> OnItemAdded;
         public event Action<string, int> OnItemRemoved;
         public event Action<float> OnWeightChanged;
+        public event Action<int, string> OnActiveSlotChanged;
 
         public bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
@@ -75,7 +82,6 @@ namespace _Project.Code.Features.Character.MB.InventorySystem
             int stackSpace = itemCfg.MaxStackSize - currentStack;
             if (stackSpace <= 0) return InventoryAddResult.Rejected(count);
 
-            // Сколько влезает по весу
             float remainingWeightCapacity = _maxWeight - _currentWeight;
             int byWeight = itemCfg.WeightPerUnit > 0f
                 ? Mathf.FloorToInt(remainingWeightCapacity / itemCfg.WeightPerUnit)
@@ -84,8 +90,12 @@ namespace _Project.Code.Features.Character.MB.InventorySystem
             int canAdd = Mathf.Min(count, Mathf.Min(stackSpace, byWeight));
             if (canAdd <= 0) return InventoryAddResult.Rejected(count);
 
+            bool isNew = !_items.ContainsKey(item.Id);
             _items[item.Id] = currentStack + canAdd;
             _currentWeight += itemCfg.WeightPerUnit * canAdd;
+
+            if (isNew)
+                _slots.Add(item.Id);
 
             OnItemAdded?.Invoke(item.Id, canAdd);
             OnWeightChanged?.Invoke(_currentWeight);
@@ -102,9 +112,23 @@ namespace _Project.Code.Features.Character.MB.InventorySystem
 
             int remaining = current - count;
             if (remaining <= 0)
+            {
                 _items.Remove(itemId);
+                int slotIdx = _slots.IndexOf(itemId);
+                if (slotIdx >= 0)
+                {
+                    _slots.RemoveAt(slotIdx);
+                    // скорректировать активный индекс
+                    if (_slots.Count > 0)
+                        _activeSlotIndex = Mathf.Clamp(_activeSlotIndex, 0, _slots.Count - 1);
+                    else
+                        _activeSlotIndex = 0;
+                }
+            }
             else
+            {
                 _items[itemId] = remaining;
+            }
 
             _currentWeight = Mathf.Max(0f, _currentWeight - weightToRemove);
 
@@ -118,40 +142,73 @@ namespace _Project.Code.Features.Character.MB.InventorySystem
             return _inventoryConfig != null ? _inventoryConfig.GetItemConfig(itemId) : null;
         }
 
+        public void SelectNextSlot()
+        {
+            if (_slots.Count == 0) return;
+            _activeSlotIndex = (_activeSlotIndex + 1) % _slots.Count;
+            OnActiveSlotChanged?.Invoke(_activeSlotIndex, ActiveItemId);
+        }
+
+        public void SelectPreviousSlot()
+        {
+            if (_slots.Count == 0) return;
+            _activeSlotIndex = (_activeSlotIndex - 1 + _slots.Count) % _slots.Count;
+            OnActiveSlotChanged?.Invoke(_activeSlotIndex, ActiveItemId);
+        }
+
+        public void SelectSlot(int index)
+        {
+            if (_slots.Count == 0) return;
+            _activeSlotIndex = Mathf.Clamp(index, 0, _slots.Count - 1);
+            OnActiveSlotChanged?.Invoke(_activeSlotIndex, ActiveItemId);
+        }
+
+        public bool UseActiveItem()
+        {
+            string itemId = ActiveItemId;
+            if (itemId == null) return false;
+
+            // Создаём временный Item через конфиг для вызова Use()
+            // Предполагается, что ItemConfig хранится в InventoryConfig или доступна отдельно.
+            // Здесь вызываем Use напрямую через контекст — конкретная логика в подклассе Item.
+            var context = new ItemUseContext(_character);
+
+            // Получаем Item из конфига (если ItemConfig зарегистрирован в InventoryConfig)
+            var itemCfg = _inventoryConfig != null ? _inventoryConfig.GetItemConfig(itemId) : null;
+            if (itemCfg?.ItemFactory == null)
+            {
+                Debug.LogWarning($"Нет фабрики предмета для '{itemId}', использование невозможно");
+                return false;
+            }
+
+            var item = itemCfg.ItemFactory.CreateItem();
+            item.Use(context);
+
+            if (itemCfg.ConsumedOnUse)
+                RemoveItem(itemId, 1);
+
+            return true;
+        }
+
         private void Update()
         {
             ApplyWeightEffects();
         }
 
-        /// <summary>
-        /// Применяет эффекты нагрузки каждый кадр через ApplyFrameSpeedMultiplier
-        /// и модифицирует восстановление выносливости.
-        /// </summary>
         private void ApplyWeightEffects()
         {
-            float ratio = WeightRatio; // 0..1
-            float pct = ratio * 100f;  // 0..100
+            float ratio = WeightRatio;
+            float pct = ratio * 100f;
 
-            // --- Скорость ---
             if (_movementSystem != null)
             {
                 float speedMult = pct > 50f ? (-pct + 150f) / 100f : 1f;
                 _movementSystem.ApplyFrameSpeedMultiplier(speedMult);
             }
 
-            // --- Восстановление выносливости ---
-            // EnduranceRegen% = sqrt(-100 * pct + 10000) / 100
             if (_enduranceSystem != null)
             {
                 float regenMult = Mathf.Sqrt(Mathf.Max(0f, -100f * pct + 10000f)) / 100f;
-
-                // КОСТЫЛЬ: ICharacterEnduranceSystem не предоставляет способа масштабировать
-                // скорость восстановления напрямую (нет аналога ApplyFrameSpeedMultiplier).
-                // Вместо этого мы вычитаем "потерянный реген" через ReduceValue каждый кадр.
-                // Коэффициент 0.1f подобран эмпирически, чтобы эффект был ощутимым, но не
-                // перекрывал базовое восстановление полностью при средней нагрузке.
-                // Правильное решение: добавить ApplyFrameRegenMultiplier в ICharacterEnduranceSystem
-                // по аналогии с ICharacterMovementSystem.ApplyFrameSpeedMultiplier.
                 float regenLoss = _enduranceSystem.MaxValue * (1f - regenMult) * Time.deltaTime * 0.1f;
                 if (regenLoss > 0f)
                     _enduranceSystem.ReduceValue(regenLoss);
