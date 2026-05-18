@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b404f01113323b34bab64b27bcc62681, type: 3}
   m_Name: grassRule
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Code.Core.Generation.Objects.EnvironmentRule
-  prefab: {fileID: 7494149061247130240, guid: c21213a82babd694990d71a3b87c4f19, type: 3}
+  prefab: {fileID: 919132149155446097, guid: 62efd0aa886ba644d8685d6e5503ecca, type: 3}
   color: {r: 0.06541474, g: 0.6603774, b: 0.0695979, a: 1}
   density: 0.1
-  minScale: 0.2
-  maxScale: 0.8
+  minScale: 30
+  maxScale: 38
   maxSlope: 30
   alignToSlope: 1
