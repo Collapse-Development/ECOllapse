@@ -570,7 +570,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6eb4ac37130730e479a3b8ac28eb3b02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Code.Core.Generation.Objects.ObjectGenerator
-  rules: []
+  rules:
+  - {fileID: 11400000, guid: f1fc03a833045e240b261d0afe5f457a, type: 2}
   loadFromResources: 1
   resourcesFolder: Environment/Rules
 --- !u!114 &827805364

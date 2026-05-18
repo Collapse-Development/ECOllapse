@@ -1,19 +1,18 @@
-using _Project.Code.Features.Character.MB;
-
 namespace _Project.Code.Features.Character.MB.InventorySystem
 {
-    /// <summary>
-    /// Абстрактный базовый класс предмета. Заглушка под систему предметов.
-    /// </summary>
-    public abstract class Item
+    public class Item
     {
-        public string Id { get; }
+        public ItemConfig Config { get; }
+        public string Id => Config.Id;
 
-        protected Item(string id)
+        public Item(ItemConfig config)
         {
-            Id = id;
+            Config = config;
         }
 
-        public abstract void Use(ItemUseContext context);
+        public virtual bool Use(ItemUseContext context)
+        {
+            return Config.Use(context);
+        }
     }
 }

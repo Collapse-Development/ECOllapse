@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d38bc69a7e222ee47a9297f1568d42f2, type: 3}
+  m_Name: WaterBattle
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Code.Features.Character.MB.InventorySystem.Items.WaterBottleItemConfig
+  _id: watter_bottle
+  _displayName: Water Bottle
+  _icon: {fileID: 0}
+  _weight: 1
+  _maxStackSize: 2
+  _consumedOnUse: 1
+  _canUse: 1
+  _hydrationRestore: 35

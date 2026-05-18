@@ -18,6 +18,7 @@ namespace _Project.Code.Features.Character.MB.InventorySystem
 
         /// <summary>Упорядоченный список id предметов (слоты инвентаря).</summary>
         IReadOnlyList<string> Slots { get; }
+        IReadOnlyList<InventoryStack> Stacks { get; }
 
         /// <summary>Индекс активного слота.</summary>
         int ActiveSlotIndex { get; }
@@ -34,7 +35,7 @@ namespace _Project.Code.Features.Character.MB.InventorySystem
         bool RemoveItem(string itemId, int count = 1);
 
         /// <summary>Получить конфиг предмета по id из InventoryConfig.</summary>
-        InventoryItemConfig GetItemConfig(string itemId);
+        ItemConfig GetItemConfig(string itemId);
 
         /// <summary>Переключить активный слот на следующий.</summary>
         void SelectNextSlot();

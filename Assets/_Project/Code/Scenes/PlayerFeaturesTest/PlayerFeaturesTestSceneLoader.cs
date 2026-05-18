@@ -23,6 +23,10 @@ public class PlayerFeaturesTestSceneLoader : MonoBehaviour
             Player = _player
         };
 
+        gameSceneContext.GameLoop = FindAnyObjectByType<GameLoop>() ??
+                                    new GameObject(nameof(GameLoop)).AddComponent<GameLoop>();
+        gameSceneContext.GameLoop.Initialize(gameSceneContext);
+
         var gameUI = FindAnyObjectByType<GameUI>();
         gameUI.Initialize(gameSceneContext);
 

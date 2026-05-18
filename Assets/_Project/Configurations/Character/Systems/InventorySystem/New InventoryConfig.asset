@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8dcc4d1a187b94f49a6908f16125f12f, type: 3}
+  m_Name: New InventoryConfig
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Code.Features.Character.MB.InventorySystem.InventoryConfig
+  MaxWeight: 50
+  _items:
+  - {fileID: 11400000, guid: 331724e95370dd840bb0f785da5af730, type: 2}
+  - {fileID: 11400000, guid: 2e0ef0edbb1380c4ca8185712db278b3, type: 2}
+  - {fileID: 11400000, guid: efaa07f2bfa342d45819b5b992e694bd, type: 2}
+  - {fileID: 11400000, guid: 035f2b1710de5f54a9d54ef67a7fe21f, type: 2}

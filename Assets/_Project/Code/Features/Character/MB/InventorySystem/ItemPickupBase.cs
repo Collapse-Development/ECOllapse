@@ -18,6 +18,13 @@ namespace _Project.Code.Features.Character.MB.InventorySystem
         /// </summary>
         public InventoryAddResult TryPickup(Character character)
         {
+            if (character == null || _count <= 0) return InventoryAddResult.Rejected(_count);
+            if (_itemConfig == null)
+            {
+                Debug.LogWarning($"{name}: ItemConfig is not assigned.");
+                return InventoryAddResult.Rejected(_count);
+            }
+
             var inventory = character.GetSystem<ICharacterInventorySystem>();
             if (inventory == null) return InventoryAddResult.Rejected(_count);
 
@@ -32,9 +39,12 @@ namespace _Project.Code.Features.Character.MB.InventorySystem
             var result = inventory.TryAddItem(item, _count);
 
             if (result.AddedCount > 0)
+            {
+                _count -= result.AddedCount;
                 OnPickedUp(character, result);
+            }
 
-            if (result.AllAdded)
+            if (_count <= 0)
                 gameObject.SetActive(false);
 
             return result;

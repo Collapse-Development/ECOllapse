@@ -1,24 +1,34 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
-using _Project.Code.Features.Character.MB;
-using _Project.Code.Features.Character.MB.MovementSystem;
 using _Project.Code.Features.Character.MB.EnduranceSystem;
+using _Project.Code.Features.Character.MB.MovementSystem;
+using UnityEngine;
 
 namespace _Project.Code.Features.Character.MB.InventorySystem
 {
-    /// <summary>
-    /// Система инвентаря персонажа.
-    ///
-    /// Эффекты нагрузки (weightRatio = CurrentWeight / MaxWeight):
-    ///   Скорость:
-    ///     если груз > 50%: Speed% = (-weightRatio*100 + 150)%
-    ///     иначе:           Speed% = 100%
-    ///
-    ///   Восстановление выносливости:
-    ///     EnduranceRegen% = sqrt(-100 * weightRatio*100 + 10000)%
-    ///     (т.е. sqrt(10000 - 100*%груза), при 0% груза = 100%, при 100% груза = 0%)
-    /// </summary>
+    [Serializable]
+    public class InventoryStack
+    {
+        public InventoryStack(string itemId, int count)
+        {
+            ItemId = itemId;
+            Count = count;
+        }
+
+        public string ItemId { get; }
+        public int Count { get; private set; }
+
+        public void Add(int count)
+        {
+            Count += count;
+        }
+
+        public void Remove(int count)
+        {
+            Count -= count;
+        }
+    }
+
     public class CharacterInventorySystem : MonoBehaviour, ICharacterInventorySystem
     {
         [SerializeField] private float _maxWeight = 50f;
@@ -29,9 +39,8 @@ namespace _Project.Code.Features.Character.MB.InventorySystem
         private ICharacterMovementSystem _movementSystem;
         private ICharacterEnduranceSystem _enduranceSystem;
 
-        // itemId → количество единиц
         private readonly Dictionary<string, int> _items = new();
-        // упорядоченный список слотов (уникальные id предметов)
+        private readonly List<InventoryStack> _stacks = new();
         private readonly List<string> _slots = new();
         private float _currentWeight;
         private int _activeSlotIndex;
@@ -42,8 +51,9 @@ namespace _Project.Code.Features.Character.MB.InventorySystem
         public float PickupRange => _pickupRange;
         public IReadOnlyDictionary<string, int> Items => _items;
         public IReadOnlyList<string> Slots => _slots;
+        public IReadOnlyList<InventoryStack> Stacks => _stacks;
         public int ActiveSlotIndex => _activeSlotIndex;
-        public string ActiveItemId => _slots.Count > 0 ? _slots[_activeSlotIndex] : null;
+        public string ActiveItemId => _stacks.Count > 0 ? _stacks[_activeSlotIndex].ItemId : null;
 
         public event Action<string, int> OnItemAdded;
         public event Action<string, int> OnItemRemoved;
@@ -64,6 +74,9 @@ namespace _Project.Code.Features.Character.MB.InventorySystem
             _pickupRange = inventoryCfg.PickupRange;
             _inventoryConfig = inventoryCfg.InventoryConfig;
 
+            if (_inventoryConfig != null && _maxWeight <= 0f)
+                _maxWeight = _inventoryConfig.MaxWeight;
+
             return true;
         }
 
@@ -76,97 +89,112 @@ namespace _Project.Code.Features.Character.MB.InventorySystem
 
         public InventoryAddResult TryAddItem(Item item, int count = 1)
         {
-            if (item == null || count <= 0) return InventoryAddResult.Rejected(count);
+            if (item == null || item.Config == null || count <= 0)
+                return InventoryAddResult.Rejected(Mathf.Max(0, count));
 
             var itemCfg = GetItemConfig(item.Id);
             if (itemCfg == null)
             {
-                Debug.LogWarning($"InventoryConfig не содержит параметров для предмета '{item.Id}'");
+                Debug.LogWarning($"InventoryConfig does not contain item '{item.Id}'.");
                 return InventoryAddResult.Rejected(count);
             }
 
-            int currentStack = _items.TryGetValue(item.Id, out var existing) ? existing : 0;
-            int stackSpace = itemCfg.MaxStackSize - currentStack;
-            if (stackSpace <= 0) return InventoryAddResult.Rejected(count);
+            int remaining = Mathf.Min(count, GetWeightCapacityFor(itemCfg));
+            int added = 0;
 
-            float remainingWeightCapacity = _maxWeight - _currentWeight;
-            int byWeight = itemCfg.WeightPerUnit > 0f
-                ? Mathf.FloorToInt(remainingWeightCapacity / itemCfg.WeightPerUnit)
-                : count;
+            if (remaining <= 0)
+                return InventoryAddResult.Rejected(count);
 
-            int canAdd = Mathf.Min(count, Mathf.Min(stackSpace, byWeight));
-            if (canAdd <= 0) return InventoryAddResult.Rejected(count);
+            foreach (var stack in _stacks)
+            {
+                if (remaining <= 0) break;
+                if (stack.ItemId != item.Id) continue;
 
-            bool isNew = !_items.ContainsKey(item.Id);
-            _items[item.Id] = currentStack + canAdd;
-            _currentWeight += itemCfg.WeightPerUnit * canAdd;
+                int stackSpace = itemCfg.MaxStackSize - stack.Count;
+                if (stackSpace <= 0) continue;
 
-            if (isNew)
-                _slots.Add(item.Id);
+                int toAdd = Mathf.Min(stackSpace, remaining);
+                stack.Add(toAdd);
+                remaining -= toAdd;
+                added += toAdd;
+            }
 
-            OnItemAdded?.Invoke(item.Id, canAdd);
+            while (remaining > 0)
+            {
+                int toAdd = Mathf.Min(itemCfg.MaxStackSize, remaining);
+                _stacks.Add(new InventoryStack(item.Id, toAdd));
+                remaining -= toAdd;
+                added += toAdd;
+            }
+
+            if (added <= 0)
+                return InventoryAddResult.Rejected(count);
+
+            _currentWeight += itemCfg.Weight * added;
+            RebuildViews();
+
+            OnItemAdded?.Invoke(item.Id, added);
             OnWeightChanged?.Invoke(_currentWeight);
+            OnActiveSlotChanged?.Invoke(_activeSlotIndex, ActiveItemId);
 
-            return new InventoryAddResult(canAdd, count - canAdd);
+            return new InventoryAddResult(added, count - added);
         }
 
         public bool RemoveItem(string itemId, int count = 1)
         {
+            if (string.IsNullOrWhiteSpace(itemId) || count <= 0) return false;
             if (!_items.TryGetValue(itemId, out int current) || current < count) return false;
 
             var itemCfg = GetItemConfig(itemId);
-            float weightToRemove = itemCfg != null ? itemCfg.WeightPerUnit * count : 0f;
+            int remaining = count;
 
-            int remaining = current - count;
-            if (remaining <= 0)
+            for (var i = _stacks.Count - 1; i >= 0 && remaining > 0; i--)
             {
-                _items.Remove(itemId);
-                int slotIdx = _slots.IndexOf(itemId);
-                if (slotIdx >= 0)
-                {
-                    _slots.RemoveAt(slotIdx);
-                    // скорректировать активный индекс
-                    if (_slots.Count > 0)
-                        _activeSlotIndex = Mathf.Clamp(_activeSlotIndex, 0, _slots.Count - 1);
-                    else
-                        _activeSlotIndex = 0;
-                }
-            }
-            else
-            {
-                _items[itemId] = remaining;
+                var stack = _stacks[i];
+                if (stack.ItemId != itemId) continue;
+
+                int toRemove = Mathf.Min(stack.Count, remaining);
+                stack.Remove(toRemove);
+                remaining -= toRemove;
+
+                if (stack.Count <= 0)
+                    _stacks.RemoveAt(i);
             }
 
+            float weightToRemove = itemCfg != null ? itemCfg.Weight * count : 0f;
             _currentWeight = Mathf.Max(0f, _currentWeight - weightToRemove);
+
+            RebuildViews();
 
             OnItemRemoved?.Invoke(itemId, count);
             OnWeightChanged?.Invoke(_currentWeight);
+            OnActiveSlotChanged?.Invoke(_activeSlotIndex, ActiveItemId);
             return true;
         }
 
-        public InventoryItemConfig GetItemConfig(string itemId)
+        public ItemConfig GetItemConfig(string itemId)
         {
             return _inventoryConfig != null ? _inventoryConfig.GetItemConfig(itemId) : null;
         }
 
         public void SelectNextSlot()
         {
-            if (_slots.Count == 0) return;
-            _activeSlotIndex = (_activeSlotIndex + 1) % _slots.Count;
+            if (_stacks.Count == 0) return;
+            _activeSlotIndex = (_activeSlotIndex + 1) % _stacks.Count;
             OnActiveSlotChanged?.Invoke(_activeSlotIndex, ActiveItemId);
         }
 
         public void SelectPreviousSlot()
         {
-            if (_slots.Count == 0) return;
-            _activeSlotIndex = (_activeSlotIndex - 1 + _slots.Count) % _slots.Count;
+            if (_stacks.Count == 0) return;
+            _activeSlotIndex = (_activeSlotIndex - 1 + _stacks.Count) % _stacks.Count;
             OnActiveSlotChanged?.Invoke(_activeSlotIndex, ActiveItemId);
         }
 
         public void SelectSlot(int index)
         {
-            if (_slots.Count == 0) return;
-            _activeSlotIndex = Mathf.Clamp(index, 0, _slots.Count - 1);
+            if (_stacks.Count == 0) return;
+            _activeSlotIndex = Mathf.Clamp(index, 0, _stacks.Count - 1);
             OnActiveSlotChanged?.Invoke(_activeSlotIndex, ActiveItemId);
         }
 
@@ -175,26 +203,48 @@ namespace _Project.Code.Features.Character.MB.InventorySystem
             string itemId = ActiveItemId;
             if (itemId == null) return false;
 
-            // Создаём временный Item через конфиг для вызова Use()
-            // Предполагается, что ItemConfig хранится в InventoryConfig или доступна отдельно.
-            // Здесь вызываем Use напрямую через контекст — конкретная логика в подклассе Item.
-            var context = new ItemUseContext(_character);
-
-            // Получаем Item из конфига (если ItemConfig зарегистрирован в InventoryConfig)
-            var itemCfg = _inventoryConfig != null ? _inventoryConfig.GetItemConfig(itemId) : null;
-            if (itemCfg?.ItemFactory == null)
+            var itemCfg = GetItemConfig(itemId);
+            if (itemCfg == null)
             {
-                Debug.LogWarning($"Нет фабрики предмета для '{itemId}', использование невозможно");
+                Debug.LogWarning($"Item config for '{itemId}' not found, item cannot be used.");
                 return false;
             }
 
-            var item = itemCfg.ItemFactory.CreateItem();
-            item.Use(context);
+            if (!itemCfg.CanUse) return false;
+
+            var item = itemCfg.CreateItem();
+            if (!item.Use(new ItemUseContext(_character))) return false;
 
             if (itemCfg.ConsumedOnUse)
                 RemoveItem(itemId, 1);
 
             return true;
+        }
+
+        private int GetWeightCapacityFor(ItemConfig itemCfg)
+        {
+            if (itemCfg.Weight <= 0f) return int.MaxValue;
+
+            float remainingWeightCapacity = _maxWeight - _currentWeight;
+            return Mathf.Max(0, Mathf.FloorToInt(remainingWeightCapacity / itemCfg.Weight));
+        }
+
+        private void RebuildViews()
+        {
+            _items.Clear();
+            _slots.Clear();
+
+            foreach (var stack in _stacks)
+            {
+                if (!_items.TryAdd(stack.ItemId, stack.Count))
+                    _items[stack.ItemId] += stack.Count;
+
+                _slots.Add(stack.ItemId);
+            }
+
+            _activeSlotIndex = _stacks.Count > 0
+                ? Mathf.Clamp(_activeSlotIndex, 0, _stacks.Count - 1)
+                : 0;
         }
 
         private void Update()
@@ -204,8 +254,7 @@ namespace _Project.Code.Features.Character.MB.InventorySystem
 
         private void ApplyWeightEffects()
         {
-            float ratio = WeightRatio;
-            float pct = ratio * 100f;
+            float pct = WeightRatio * 100f;
 
             if (_movementSystem != null)
             {

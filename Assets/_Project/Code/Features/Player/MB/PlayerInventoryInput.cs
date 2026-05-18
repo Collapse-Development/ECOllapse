@@ -31,10 +31,12 @@ public class PlayerInventoryInput : MonoBehaviour
         _nextAction     = InputSystem.actions.FindAction("Next");
         _previousAction = InputSystem.actions.FindAction("Previous");
 
-        _interactAction.performed += OnInteract;
-        _attackAction.performed   += OnAttack;
-        _nextAction.performed     += OnNext;
-        _previousAction.performed += OnPrevious;
+        if (_interactAction != null) _interactAction.performed += OnInteract;
+        if (_attackAction != null) _attackAction.performed += OnAttack;
+        if (_nextAction != null) _nextAction.performed += OnNext;
+        if (_previousAction != null) _previousAction.performed += OnPrevious;
+
+        RefreshInventory(_player.Character);
     }
 
     private void OnDestroy()
@@ -49,7 +51,12 @@ public class PlayerInventoryInput : MonoBehaviour
         _Project.Code.Features.Character.MB.Character old,
         _Project.Code.Features.Character.MB.Character current)
     {
-        _inventory = current?.GetSystem<ICharacterInventorySystem>();
+        RefreshInventory(current);
+    }
+
+    private void RefreshInventory(_Project.Code.Features.Character.MB.Character character)
+    {
+        _inventory = character?.GetSystem<ICharacterInventorySystem>();
     }
 
     private void OnInteract(InputAction.CallbackContext _) => TryPickupNearest();
@@ -70,7 +77,7 @@ public class PlayerInventoryInput : MonoBehaviour
 
         foreach (var col in colliders)
         {
-            var pickup = col.GetComponent<ItemPickupBase>();
+            var pickup = col.GetComponentInParent<ItemPickupBase>();
             if (pickup == null) continue;
 
             float dist = Vector3.Distance(character.transform.position, pickup.transform.position);
