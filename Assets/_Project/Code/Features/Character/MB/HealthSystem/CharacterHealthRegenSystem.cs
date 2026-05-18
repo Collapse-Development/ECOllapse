@@ -1,6 +1,6 @@
 using UnityEngine;
 using _Project.Code.Features.Character.MB;
-using _Project.Code.Features.Character.MB.NeedsSystem.Satiety;
+using _Project.Code.Features.Character.MB.FirmnessSystem;
 using _Project.Code.Features.Character.MB.Thirst;
 using _Project.Code.Features.Character.MB.Vigor;
 
@@ -14,7 +14,7 @@ namespace CharacterSystems
         private const float VigorThreshold = 40f;
 
         private ICharacterHealthSystem _healthSystem;
-        private ICharacterSatietySystem _satietySystem;
+        private ICharacterFirmnessSystem _satietySystem;
         private ICharacterThirstSystem _hydrationSystem;
         private ICharacterVigorSystem _vigorSystem;
 
@@ -24,23 +24,30 @@ namespace CharacterSystems
         public float CurrentRegenRate { get; private set; }
         public bool IsRegenerating { get; private set; }
 
+        public override bool TryRegister(Character character)
+        {
+            return character.TryRegisterSystem<ICharacterHealthRegenSystem>(this);
+        }
+
         public override bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
             if (!base.TryInitialize(character, cfg)) return false;
 
             if (cfg is not CharacterHealthRegenSystemConfig regenCfg) return false;
 
-            if (!character.TryRegisterSystem<ICharacterHealthRegenSystem>(this)) return false;
-
-            _healthSystem = character.GetSystem<ICharacterHealthSystem>();
-            _satietySystem = character.GetSystem<ICharacterSatietySystem>();
-            _hydrationSystem = character.GetSystem<ICharacterThirstSystem>();
-            _vigorSystem = character.GetSystem<ICharacterVigorSystem>();
-
             _maxRegen = regenCfg.MaxRegenPerSecond;
             _minRegen = _maxRegen / 2f;
 
             Debug.Log($"HealthRegenSystem initialized: MaxRegen={_maxRegen} HP/s. IsActive={IsActive}");
+            return true;
+        }
+
+        public override bool TryResolveDependencies(Character character)
+        {
+            _healthSystem = character.GetSystem<ICharacterHealthSystem>();
+            _satietySystem = character.GetSystem<ICharacterFirmnessSystem>();
+            _hydrationSystem = character.GetSystem<ICharacterThirstSystem>();
+            _vigorSystem = character.GetSystem<ICharacterVigorSystem>();
             return true;
         }
 
@@ -55,7 +62,7 @@ namespace CharacterSystems
             
             if (_healthSystem == null) return;
 
-            float satiety = _satietySystem?.Satiety ?? 0f;
+            float satiety = _satietySystem?.CurrentValue ?? 0f;
             float hydration = _hydrationSystem?.Hydration ?? 0f;
             float vigor = _vigorSystem?.Vigor ?? 0f;
 

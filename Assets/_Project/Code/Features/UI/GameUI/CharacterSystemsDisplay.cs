@@ -5,8 +5,8 @@ using _Project.Code.Features.Character.MB;
 using _Project.Code.Features.Character.MB.AttackSystem;
 using _Project.Code.Features.Character.MB.EffectsSystem;
 using _Project.Code.Features.Character.MB.EnduranceSystem;
+using _Project.Code.Features.Character.MB.FirmnessSystem;
 using _Project.Code.Features.Character.MB.MovementSystem;
-using _Project.Code.Features.Character.MB.NeedsSystem.Satiety;
 using _Project.Code.Features.Character.MB.Thirst;
 using _Project.Code.Features.Character.MB.Vigor;
 using CharacterSystems;
@@ -37,7 +37,7 @@ public class CharacterSystemsDisplay : MonoBehaviour
         new("Health", typeof(ICharacterHealthSystem)),
         new("Health Regen", typeof(ICharacterHealthRegenSystem)),
         new("Endurance", typeof(ICharacterEnduranceSystem)),
-        new("Satiety", typeof(ICharacterSatietySystem)),
+        new("Satiety", typeof(ICharacterFirmnessSystem)),
         new("Thirst", typeof(ICharacterThirstSystem)),
         new("Vigor", typeof(ICharacterVigorSystem)),
         new("Movement", typeof(ICharacterMovementSystem)),
@@ -336,8 +336,8 @@ public class CharacterSystemsDisplay : MonoBehaviour
                 AppendLine("Endurance",
                     $"{FormatNumber(enduranceSystem.CurrentValue)} / {FormatNumber(enduranceSystem.MaxValue)}");
                 return;
-            case ICharacterSatietySystem satietySystem:
-                AppendLine("Satiety", FormatNumber(satietySystem.Satiety));
+            case ICharacterFirmnessSystem satietySystem:
+                AppendLine("Satiety", FormatNumber(satietySystem.CurrentValue));
                 return;
             case ICharacterThirstSystem thirstSystem:
                 AppendLine("Thirst",

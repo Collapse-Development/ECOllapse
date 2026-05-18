@@ -21,6 +21,16 @@ namespace _Project.Code.Features.Character.MB.AttackSystem
         private Character _character;
         private bool isAttacking = false;
         private Coroutine currentAttackCoroutine;
+
+        public bool TryRegister(Character character)
+        {
+            _character = character;
+            if (_character.TryRegisterSystem<IAttackSystem>(this))
+                return true;
+
+            Debug.LogError("Failed to register CharacterAttackSystem");
+            return false;
+        }
         
         public bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
@@ -30,20 +40,18 @@ namespace _Project.Code.Features.Character.MB.AttackSystem
                 Debug.LogError("Invalid config type for CharacterAttackSystem");
                 return false;
             }
-            
-            _character = character;
-            if (!_character.TryRegisterSystem<IAttackSystem>(this))
-            {
-                Debug.LogError("Failed to register CharacterAttackSystem");
-                return false;
-            }
-            
+
             attackDamage = attackCfg.AttackDamage;
             attackDelay = attackCfg.AttackDelay;
             attackRange = attackCfg.AttackRange;
             
             Debug.Log($"AttackSystem initialized with config");
             return true;
+        }
+
+        public bool TryResolveDependencies(Character character)
+        {
+            return character != null;
         }
         
         public void Attack()

@@ -50,20 +50,27 @@ namespace _Project.Code.Features.Character.MB.InventorySystem
         public event Action<float> OnWeightChanged;
         public event Action<int, string> OnActiveSlotChanged;
 
+        public bool TryRegister(Character character)
+        {
+            _character = character;
+            return _character.TryRegisterSystem<ICharacterInventorySystem>(this);
+        }
+
         public bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
             if (cfg is not CharacterInventorySystemConfig inventoryCfg) return false;
-
-            _character = character;
-            if (!_character.TryRegisterSystem<ICharacterInventorySystem>(this)) return false;
 
             _maxWeight = inventoryCfg.MaxWeight;
             _pickupRange = inventoryCfg.PickupRange;
             _inventoryConfig = inventoryCfg.InventoryConfig;
 
+            return true;
+        }
+
+        public bool TryResolveDependencies(Character character)
+        {
             _movementSystem = character.GetSystem<ICharacterMovementSystem>();
             _enduranceSystem = character.GetSystem<ICharacterEnduranceSystem>();
-
             return true;
         }
 

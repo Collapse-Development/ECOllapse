@@ -29,6 +29,24 @@ namespace _Project.Code.Features.Character.MB
             return true;
         }
 
+        public void UnregisterSystem(ICharacterSystem system)
+        {
+            if (system == null) return;
+
+            Type registeredType = null;
+            foreach (var pair in _systems)
+            {
+                if (ReferenceEquals(pair.Value, system))
+                {
+                    registeredType = pair.Key;
+                    break;
+                }
+            }
+
+            if (registeredType != null)
+                _systems.Remove(registeredType);
+        }
+
         [CanBeNull]
         public T GetSystem<T>() where T : class, ICharacterSystem
         {

@@ -9,6 +9,11 @@ namespace _Project.Code.Features.Character.MB
         public bool IsActive { get; protected set; }
 
         // Виртуальный метод, чтобы наследники могли его вызвать через base.TryInitialize
+        public virtual bool TryRegister(Character character)
+        {
+            return character != null;
+        }
+
         public virtual bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
             if (cfg == null) return false;
@@ -18,6 +23,11 @@ namespace _Project.Code.Features.Character.MB
         }
 
         // Метод для динамического переключения (например, при получении мутации или дебаффа)
+        public virtual bool TryResolveDependencies(Character character)
+        {
+            return character != null;
+        }
+
         public virtual void SetActiveState(bool state)
         {
             IsActive = state;

@@ -36,18 +36,14 @@ namespace _Project.Code.Features.Character.MB.FirmnessSystem
         public event System.Action<float> OnMaxValueChanged;
         public event System.Action<float> OnStunned;
 
+        public bool TryRegister(Character character)
+        {
+            return character.TryRegisterSystem<ICharacterFirmnessSystem>(this);
+        }
+
         public bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
             if (cfg is not CharacterFirmnessSystemConfig firmnessCfg) return false;
-
-            if (!character.TryRegisterSystem<ICharacterFirmnessSystem>(this)) return false;
-
-            // Получаем ссылку на систему выносливости для расчета регенерации
-            _enduranceSystem = character.GetSystem<ICharacterEnduranceSystem>();
-            if (_enduranceSystem == null)
-            {
-                Debug.LogWarning("CharacterFirmnessSystem needs ICharacterEnduranceSystem to calculate regen properly!");
-            }
 
             _maxValue = firmnessCfg.MaxValue;
             _minValue = firmnessCfg.MinValue;
@@ -59,6 +55,17 @@ namespace _Project.Code.Features.Character.MB.FirmnessSystem
             CurrentValue = firmnessCfg.StartFromMaxValue 
                 ? _maxValue 
                 : Mathf.Clamp(firmnessCfg.CurrentValue, _minValue, _maxValue);
+
+            return true;
+        }
+
+        public bool TryResolveDependencies(Character character)
+        {
+            _enduranceSystem = character.GetSystem<ICharacterEnduranceSystem>();
+            if (_enduranceSystem == null)
+            {
+                Debug.LogWarning("CharacterFirmnessSystem needs ICharacterEnduranceSystem to calculate regen properly!");
+            }
 
             return true;
         }

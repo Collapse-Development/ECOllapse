@@ -10,17 +10,24 @@ namespace _Project.Code.Features.Character.MB.Pickup
         private float _pickupRadius;
         private LayerMask _pickupLayer;
 
+        public bool TryRegister(Character character)
+        {
+            return character.TryRegisterSystem<ICharacterPickupSystem>(this);
+        }
+
         public bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
             if (cfg is not CharacterPickupSystemConfig pickupCfg) return false;
             
-            // Регистрируем систему в персонаже
-            if (!character.TryRegisterSystem<ICharacterPickupSystem>(this)) return false;
-
             _pickupRadius = pickupCfg.PickupRadius;
             _pickupLayer = pickupCfg.PickupLayer;
             
             return true;
+        }
+
+        public bool TryResolveDependencies(Character character)
+        {
+            return character != null;
         }
 
         public void TryPickup()

@@ -12,15 +12,24 @@ namespace CharacterSystems
         private ICharacterHealthSystem _healthSystem;
 
         public event Action OnHit;
+
+        public bool TryRegister(Character character)
+        {
+            _character = character;
+            return _character.TryRegisterSystem<ICharacterHitProcessingSystem>(this);
+        }
         
         public bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
             if (cfg is not CharacterHitProcessingSystemConfig systemCfg) return false;
             
-            _character = character;
-            if (!_character.TryRegisterSystem<ICharacterHitProcessingSystem>(this)) return false;
-            
             Debug.Log($"HitProcessing initialized");
+            return true;
+        }
+
+        public bool TryResolveDependencies(Character character)
+        {
+            _healthSystem = character.GetSystem<ICharacterHealthSystem>();
             return true;
         }
 
@@ -32,10 +41,9 @@ namespace CharacterSystems
                 return;
             }
 
-            var healthSystem = _character.GetSystem<ICharacterHealthSystem>();
-            if (healthSystem != null)
+            if (_healthSystem != null)
             {
-                healthSystem.TakeDamage(damage);
+                _healthSystem.TakeDamage(damage);
             }
             else
             {

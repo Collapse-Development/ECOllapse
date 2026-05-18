@@ -43,13 +43,14 @@ namespace _Project.Code.Features.Character.MB.EnduranceSystem
         public event System.Action<float, float> OnCurrentValueChanged;
         public event System.Action<float> OnMaxValueChanged;
 
+        public bool TryRegister(Character character)
+        {
+            return character.TryRegisterSystem<ICharacterEnduranceSystem>(this);
+        }
+
         public bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
             if (cfg is not CharacterEnduranceSystemConfig enduranceCfg) return false;
-
-            if (!character.TryRegisterSystem<ICharacterEnduranceSystem>(this)) return false;
-
-            _movementSystem = character.GetSystem<ICharacterMovementSystem>();
 
             _maxValue = Mathf.Max(0f, enduranceCfg.MaxValue);
             _decreasePerSecond = Mathf.Max(0f, enduranceCfg.DecreasePerSecond);
@@ -66,6 +67,13 @@ namespace _Project.Code.Features.Character.MB.EnduranceSystem
             Debug.Log($"EnduranceSystem initialized: CurrentValue={_currentValue}, MaxValue={_maxValue}, DecreasePerSecond={_decreasePerSecond}, RestorePerSecond={_restorePerSecond}, RestoreDelay={_restoreDelay}");
             return true;
         }
+
+        public bool TryResolveDependencies(Character character)
+        {
+            _movementSystem = character.GetSystem<ICharacterMovementSystem>();
+            return true;
+        }
+
         private void TriggerExhaustion()
         {
             _exhaustionTimer = _exhaustionDuration;

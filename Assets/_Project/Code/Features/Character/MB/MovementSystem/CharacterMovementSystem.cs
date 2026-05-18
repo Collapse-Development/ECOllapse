@@ -28,6 +28,16 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
         private float _baseSpeed;
         private float _frameSpeedMultiplier = 1;
         private Rigidbody _rb;
+
+        public bool TryRegister(Character character)
+        {
+            _character = character;
+            if (_character.TryRegisterSystem<ICharacterMovementSystem>(this))
+                return true;
+
+            Debug.Log("Fuck2");
+            return false;
+        }
         
         public bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
@@ -37,19 +47,17 @@ namespace _Project.Code.Features.Character.MB.MovementSystem
                 Debug.Log("Fuck1");
                 return false;
             }
-            
-            _character = character;
-            if (!_character.TryRegisterSystem<ICharacterMovementSystem>(this))
-            {
-                Debug.Log("Fuck2");
-                return false;
-            }
-            
+
             _baseSpeed = movementCfg.Speed;
             _runMultiplier = movementCfg.RunMultiplier;
             
             Debug.Log($"MovementSystem initialized with config: Speed={_speed}");
             return true;
+        }
+
+        public bool TryResolveDependencies(Character character)
+        {
+            return character != null;
         }
         
         private void Awake()

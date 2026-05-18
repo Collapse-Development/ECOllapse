@@ -14,17 +14,25 @@ namespace CharacterSystems
             set => _resistance = value;
         }
 
+        public bool TryRegister(Character character)
+        {
+            _character = character;
+            return _character.TryRegisterSystem<ICharacterDamageResistanceSystem>(this);
+        }
+
         public bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
             if (cfg is not CharacterDamageResistanceSystemConfig resistanceCfg) return false;
-            
-            _character = character;
-            if (!_character.TryRegisterSystem<ICharacterDamageResistanceSystem>(this)) return false;
             
             _resistance = resistanceCfg.BaseResistance;
             
             Debug.Log($"DamageResistanceSystem initialized with config: Resistance={_resistance}");
             return true;
+        }
+
+        public bool TryResolveDependencies(Character character)
+        {
+            return character != null;
         }
     }
 }

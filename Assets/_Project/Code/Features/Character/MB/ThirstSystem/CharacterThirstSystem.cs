@@ -37,14 +37,15 @@ namespace _Project.Code.Features.Character.MB.Thirst
         public event System.Action<float, float> OnCurrentValueChanged;
         public event System.Action<float> OnMaxValueChanged;
 
+        public bool TryRegister(Character character)
+        {
+            _targetCharacter = character;
+            return character.TryRegisterSystem<ICharacterThirstSystem>(this);
+        }
+
         public bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
             if (cfg is not CharacterThirstSystemConfig thirstCfg) return false;
-
-            if (!character.TryRegisterSystem<ICharacterThirstSystem>(this)) return false;
-
-            _targetCharacter = character;
-            _movementSystem = character.GetSystem<ICharacterMovementSystem>();
 
             _maxValue = Mathf.Max(0f, thirstCfg.MaxValue);
             _decreasePerSecond = Mathf.Max(0f, thirstCfg.DecreasePerSecond);
@@ -54,6 +55,12 @@ namespace _Project.Code.Features.Character.MB.Thirst
                 : Mathf.Clamp(thirstCfg.CurrentValue, 0f, _maxValue);
 
             Debug.Log($"ThirstSystem initialized: CurrentValue={_currentValue}, MaxValue={_maxValue}, DecreasePerSecond={_decreasePerSecond}, RunningDecreaseMultiplier={_runningDecreaseMultiplier}, targetCharacter={_targetCharacter}");
+            return true;
+        }
+
+        public bool TryResolveDependencies(Character character)
+        {
+            _movementSystem = character.GetSystem<ICharacterMovementSystem>();
             return true;
         }
 

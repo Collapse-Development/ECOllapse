@@ -33,16 +33,19 @@ namespace CharacterSystems
 
         public event Action<float, float> OnHealthChanged;
         public event Action OnDeath;
+
+        public override bool TryRegister(Character character)
+        {
+            _character = character;
+            return _character.TryRegisterSystem<ICharacterHealthSystem>(this);
+        }
         
         public override bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
             if (!base.TryInitialize(character, cfg)) return false;
 
             if (cfg is not CharacterHealthSystemConfig healthCfg) return false;
-            
-            _character = character;
-            if (!_character.TryRegisterSystem<ICharacterHealthSystem>(this)) return false;
-            
+
             _maxHealth = healthCfg.MaxHealth;
             
             Debug.Log($"HealthSystem initialized with config: MaxHealth={_maxHealth}. IsActive={IsActive}");

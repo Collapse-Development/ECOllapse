@@ -12,18 +12,27 @@ namespace CharacterSystems
         [SerializeField] private Character _character;
         public CharacterModel Model { get; private set; }
 
+        public bool TryRegister(Character character)
+        {
+            _character = character;
+            return _character.TryRegisterSystem<ICharacterModelSystem>(this);
+        }
+
         public bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
             if (cfg is not CharacterModelSystemConfig modelCfg) return false;
 
-            _character = character;
-            if (!_character.TryRegisterSystem<ICharacterModelSystem>(this)) return false;
-            
             _prefabPath = modelCfg.PrefabPath;
             
             Debug.Log($"ModelSystem initialized with config: PrefabPath={_prefabPath}");
             return true;
         }
+
+        public bool TryResolveDependencies(Character character)
+        {
+            return character != null;
+        }
+
         private void Start()
         {
             if (string.IsNullOrEmpty(_prefabPath))

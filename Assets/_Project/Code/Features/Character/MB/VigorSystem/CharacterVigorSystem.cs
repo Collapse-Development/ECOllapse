@@ -27,11 +27,14 @@ namespace _Project.Code.Features.Character.MB.Vigor
         public event System.Action<float, float> OnValueChanged;
         public event System.Action<float> OnMaxValueChanged;
 
+        public bool TryRegister(Character character)
+        {
+            return character.TryRegisterSystem<ICharacterVigorSystem>(this);
+        }
+
         public bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
             if (cfg is not CharacterVigorSystemConfig vigorCfg) return false;
-
-            if (!character.TryRegisterSystem<ICharacterVigorSystem>(this)) return false;
 
             _maxValue = Mathf.Max(0f, vigorCfg.MaxValue);
             _decreasePerSecond = Mathf.Max(0f, vigorCfg.DecreasePerSecond);
@@ -41,6 +44,11 @@ namespace _Project.Code.Features.Character.MB.Vigor
 
             Debug.Log($"VigorSystem initialized: CurrentValue={_currentValue}, MaxValue={_maxValue}, DecreasePerSecond={_decreasePerSecond}");
             return true;
+        }
+
+        public bool TryResolveDependencies(Character character)
+        {
+            return character != null;
         }
 
         private void Update()

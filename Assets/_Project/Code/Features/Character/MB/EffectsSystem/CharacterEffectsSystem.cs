@@ -12,19 +12,27 @@ namespace _Project.Code.Features.Character.MB.EffectsSystem
         private List<ICharacterEffect> _effects;
         private List<ICharacterEffect> _cancelledEffects;
         private Character _character;
+
+        public bool TryRegister(Character character)
+        {
+            _character = character;
+            return _character.TryRegisterSystem<ICharacterEffectsSystem>(this);
+        }
         
         public bool TryInitialize(Character character, CharacterSystemConfig cfg)
         {
             if (cfg is not CharacterEffectsSystemConfig systemCfg) return false;
-            
-            _character = character;
-            if (!_character.TryRegisterSystem<ICharacterEffectsSystem>(this)) return false;
             
             _effects = new List<ICharacterEffect>();
             _cancelledEffects = new List<ICharacterEffect>();
             
             Debug.Log($"EffectsSystem initialized");
             return true;
+        }
+
+        public bool TryResolveDependencies(Character character)
+        {
+            return character != null;
         }
         
         private void Update()
