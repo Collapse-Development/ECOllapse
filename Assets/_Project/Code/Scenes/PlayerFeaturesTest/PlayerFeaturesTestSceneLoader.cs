@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using _Project.Code.Features.Player.MB;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,6 +9,7 @@ public class PlayerFeaturesTestSceneLoader : MonoBehaviour
     [SerializeField] private Player _player;
     [SerializeField] private CharacterConfig _playerConfig;
     [SerializeField] private GameObject _eggPrefab;
+    [SerializeField] private List<CharacterMutation> _availableMutations = new();
     
     private IEnumerator Start()
     {
@@ -28,7 +30,8 @@ public class PlayerFeaturesTestSceneLoader : MonoBehaviour
         gameSceneContext.PlayerEggCheckpointSystem.Initialize(
             gameSceneContext,
             _playerConfig,
-            _eggPrefab);
+            _eggPrefab,
+            _availableMutations);
 
         gameSceneContext.GameLoop = FindAnyObjectByType<GameLoop>() ??
                                     new GameObject(nameof(GameLoop)).AddComponent<GameLoop>();

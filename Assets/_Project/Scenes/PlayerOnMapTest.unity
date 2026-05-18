@@ -525,6 +525,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PLayerFeaturesTestSceneLoader
   _player: {fileID: 157961219}
   _playerConfig: {fileID: 11400000, guid: 405fb20b693fdaf41bbe4855c094c8e7, type: 2}
+  _eggPrefab: {fileID: 639841108642163510, guid: 4901fc2846356b54689a90f95fc1e332, type: 3}
+  _availableMutations:
+  - {fileID: 11400000, guid: 170316c36d155f5448948b5224f9ad8f, type: 2}
+  - {fileID: 11400000, guid: 86d4ce1533691064a90ae37e6759d173, type: 2}
+  - {fileID: 11400000, guid: 8e13cf9142d88244eaab87666d2bbbed, type: 2}
+  - {fileID: 11400000, guid: e468482da1715c0488e11686494c49ec, type: 2}
+  - {fileID: 11400000, guid: d9ecfb825b1ee5149a25daaf8a1de08c, type: 2}
+  - {fileID: 11400000, guid: f88260164e5d2fe4a9210ad65bb84e42, type: 2}
+  - {fileID: 11400000, guid: 9a6bc53ca91282d4eba502d87963eba7, type: 2}
+  - {fileID: 11400000, guid: 8017e21ff91b89943bb0836203671e25, type: 2}
 --- !u!4 &778944192
 Transform:
   m_ObjectHideFlags: 0
