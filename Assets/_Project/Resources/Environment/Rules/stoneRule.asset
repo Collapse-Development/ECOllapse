@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b404f01113323b34bab64b27bcc62681, type: 3}
   m_Name: stoneRule
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Code.Core.Generation.Objects.EnvironmentRule
-  prefab: {fileID: 7494149061247130240, guid: c21213a82babd694990d71a3b87c4f19, type: 3}
+  prefab: {fileID: 919132149155446097, guid: 27f88f5b8f9de7e4ead13999203f6310, type: 3}
   color: {r: 0.254717, g: 0.22948559, b: 0.22948559, a: 1}
-  density: 0.154
-  minScale: 0.2
-  maxScale: 0.8
+  density: 0.05
+  minScale: 18
+  maxScale: 24
   maxSlope: 30
   alignToSlope: 1
