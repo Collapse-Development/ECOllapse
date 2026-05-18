@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: healing
   _displayName: Healing
   _icon: {fileID: 0}
-  _weight: 1
+  _weight: 2
   _maxStackSize: 2
   _consumedOnUse: 1
   _canUse: 1

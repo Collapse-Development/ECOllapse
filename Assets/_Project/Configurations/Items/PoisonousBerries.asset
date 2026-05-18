@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: poisonous_berries
   _displayName: Poisonous Berries
   _icon: {fileID: 0}
-  _weight: 1
+  _weight: 0.1
   _maxStackSize: 32
   _consumedOnUse: 1
   _canUse: 1

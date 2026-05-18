@@ -7,6 +7,7 @@ public class PlayerFeaturesTestSceneLoader : MonoBehaviour
 {
     [SerializeField] private Player _player;
     [SerializeField] private CharacterConfig _playerConfig;
+    [SerializeField] private GameObject _eggPrefab;
     
     private IEnumerator Start()
     {
@@ -20,8 +21,14 @@ public class PlayerFeaturesTestSceneLoader : MonoBehaviour
 
         var gameSceneContext = new GameSceneContext
         {
-            Player = _player
+            Player = _player,
+            PlayerEggCheckpointSystem = new PlayerEggCheckpointSystem()
         };
+
+        gameSceneContext.PlayerEggCheckpointSystem.Initialize(
+            gameSceneContext,
+            _playerConfig,
+            _eggPrefab);
 
         gameSceneContext.GameLoop = FindAnyObjectByType<GameLoop>() ??
                                     new GameObject(nameof(GameLoop)).AddComponent<GameLoop>();

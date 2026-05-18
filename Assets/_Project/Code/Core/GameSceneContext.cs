@@ -4,4 +4,5 @@ public class GameSceneContext
 {
     public Player Player;
     public GameLoop GameLoop;
+    public PlayerEggCheckpointSystem PlayerEggCheckpointSystem;
 }

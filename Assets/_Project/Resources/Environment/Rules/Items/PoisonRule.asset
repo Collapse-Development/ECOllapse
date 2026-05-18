@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Code.Core.Generation.Objects.EnvironmentRule
   prefab: {fileID: 5237343046723744179, guid: 55baaffe6cc69804bafb433e241ea511, type: 3}
   color: {r: 1, g: 1, b: 1, a: 1}
-  density: 0.1
+  density: 0.002
   minScale: 1
   maxScale: 1
-  maxSlope: 30
+  maxSlope: 15
   alignToSlope: 1

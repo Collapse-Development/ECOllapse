@@ -58,6 +58,12 @@ public class GameLoop : MonoBehaviour
 
     private void OnPlayerDeath()
     {
+        if (GameSceneContext?.PlayerEggCheckpointSystem != null &&
+            GameSceneContext.PlayerEggCheckpointSystem.TryRespawnFromEgg(_currentCharacter))
+        {
+            return;
+        }
+
         SetPlayerState(PlayerState.Dead);
     }
 

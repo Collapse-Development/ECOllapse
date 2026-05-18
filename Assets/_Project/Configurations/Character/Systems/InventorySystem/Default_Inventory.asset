@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterInventorySystemConfig
   IsActive: 1
   MaxWeight: 50
-  PickupRange: 2
+  PickupRange: 1
   InventoryConfig: {fileID: 11400000, guid: 25177bca54924ad40b5e58206f24e065, type: 2}
